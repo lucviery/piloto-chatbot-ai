@@ -20,6 +20,11 @@ interface ChatMessage {
   sources?: { title: string; url: string }[];
 }
 
+export function createClientId(): string {
+  if (typeof globalThis.crypto?.randomUUID === 'function') return globalThis.crypto.randomUUID();
+  return `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export function Chat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [value, setValue] = useState('');
@@ -40,7 +45,7 @@ export function Chat() {
     if (appendUser) {
       setMessages((current) => [
         ...current,
-        { id: crypto.randomUUID(), role: 'user', content: trimmed },
+        { id: createClientId(), role: 'user', content: trimmed },
       ]);
     }
 

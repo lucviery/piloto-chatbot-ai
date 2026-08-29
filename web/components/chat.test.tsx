@@ -1,12 +1,19 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { Chat } from './chat';
+import { Chat, createClientId } from './chat';
 
 describe('Chat', () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+  });
+
+  it('creates a local id when randomUUID is unavailable over HTTP', () => {
+    const originalCrypto = globalThis.crypto;
+    Object.defineProperty(globalThis, 'crypto', { value: {}, configurable: true });
+    expect(createClientId()).toMatch(/^local-/);
+    Object.defineProperty(globalThis, 'crypto', { value: originalCrypto, configurable: true });
   });
 
   it('sends a message and renders the answer', async () => {

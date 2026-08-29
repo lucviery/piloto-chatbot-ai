@@ -87,6 +87,7 @@ Atualizado em: 2026-08-29 UTC.
 - A segunda validação confirmou rota `rag` e a fonte `criar_cortesia`, mas uma tentativa retornou `503` e outra foi truncada ao consumir 512 tokens em raciocínio; `think: false` foi aplicado no nível superior da API Ollama e o limite visível elevado a 768 tokens.
 - A validação com `think: false` retornou HTTP 201, rota `rag`, resposta completa e fonte `criar_cortesia` em cerca de 2,5 minutos.
 - A atualização automática foi retirada por decisão do usuário; no piloto, a ingestão do DokuWiki será acionada manualmente quando necessário.
+- No acesso pela LAN em HTTP, alguns navegadores não disponibilizam `crypto.randomUUID`; a interface passou a usar fallback local para o ID visual da mensagem, mantendo UUIDs persistentes gerados pela API.
 
 ### 2026-08-29 — DokuWiki indicado como corpus inicial do RAG
 

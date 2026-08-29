@@ -27,16 +27,17 @@ Atualizado em: 2026-08-29 UTC.
 - O usuário `ia-user` pertence ao grupo `docker`; o daemon e a execução de containers foram validados.
 - A Fase 1 foi concluída: Ollama 0.33.1 está saudável e restrito a `127.0.0.1:11434`; `deepseek-r1:7b` é o modelo padrão provisório.
 - O spike da Fase 2 reprovou OpenClaw + DeepSeek e o OpenClaw foi retirado da arquitetura vigente e do Compose.
+- A Fase 3 está em andamento: a API NestJS possui saúde, mensagens, validação, correlação, `OrchestratorModule` e `LlmModule` com integração direta ao Ollama.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: OpenClaw retirado da arquitetura vigente, do Compose e das configurações executáveis; relatório do spike preservado como histórico.
-- Verificações realizadas: referências vigentes revisadas; Compose validado sem serviços ou volumes OpenClaw; volumes temporários e imagem local do spike removidos; Ollama mantido saudável.
-- Trabalho em andamento: nenhum.
-- Próximo passo exato: iniciar a Fase 3 criando a API NestJS com `OrchestratorModule` e `LlmModule`, integrados diretamente ao Ollama.
-- Bloqueios conhecidos: nenhum para iniciar a Fase 3. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam o primeiro fluxo conversacional.
+- Última ação concluída: criada a base da API NestJS com endpoints `GET /health` e `POST /messages`, rota direta pelo `OrchestratorModule` e provedor Ollama encapsulado no `LlmModule`.
+- Verificações realizadas: tipagem e build aprovados; quatro testes unitários e três testes HTTP ponta a ponta aprovados; `docker compose config --quiet` aprovado; auditoria npm sem vulnerabilidades conhecidas; API executada localmente com saúde confirmada e resposta real `OK` do `deepseek-r1:7b` pelo `POST /messages`.
+- Trabalho em andamento: validação da imagem/container e conclusão dos identificadores conversacionais e logs da Fase 3.
+- Próximo passo exato: restaurar o acesso efetivo da sessão ao socket Docker, executar `docker compose up -d --build api` e confirmar o health check do container; depois implementar identificadores de sessão/conversa e logs estruturados.
+- Bloqueios conhecidos: nesta sessão, o processo não herdou o grupo `docker` e o socket `/var/run/docker.sock` aparece como `nobody:nogroup`, impedindo a validação de runtime mesmo com `ia-user` cadastrado no grupo `docker`. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam o fluxo direto.
 
 ## Decisões vigentes
 
@@ -74,6 +75,16 @@ Atualizado em: 2026-08-29 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-29 — Base da Fase 3 implementada
+
+- Criada a API NestJS com módulos separados de saúde, orquestração e provedor LLM.
+- Implementado o contrato inicial de mensagens com validação, limite de 4.000 caracteres, identificadores de mensagem e correlação e rota `direct` explícita.
+- A integração com Ollama usa endpoint interno configurável, modelo configurável e timeout de 180 segundos, retornando erros explícitos para timeout, indisponibilidade e resposta vazia.
+- Adicionado serviço `api` ao Compose, restrito por padrão a `127.0.0.1:3000`, sem privilégios adicionais e com sistema de arquivos somente leitura.
+- Tipagem, build, quatro testes unitários, três testes HTTP ponta a ponta e validação estática do Compose passaram.
+- A API executada diretamente recebeu uma requisição real e retornou `OK` do `deepseek-r1:7b`, preservando o identificador de correlação e a rota `direct`.
+- A validação em container ficou pendente porque o processo da sessão não possui acesso efetivo ao socket Docker.
 
 ### 2026-08-29 — OpenClaw retirado da arquitetura vigente
 

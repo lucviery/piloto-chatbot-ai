@@ -29,3 +29,26 @@ O RAG é reservado para conhecimento documental, como manuais, políticas e proc
 - DeepSeek local servido pelo Ollama no ambiente de desenvolvimento.
 - Possibilidade futura de OpenAI API como alternativa ou fallback configurável.
 - Sem Kubernetes ou K3s nesta etapa.
+
+## API do primeiro fluxo
+
+Com as dependências instaladas, execute as verificações locais:
+
+```bash
+npm run typecheck
+npm test
+npm run test:e2e
+```
+
+No ambiente Docker, a API fica disponível apenas no loopback por padrão:
+
+```bash
+docker compose up -d --build api
+curl http://127.0.0.1:3000/health
+curl -X POST http://127.0.0.1:3000/messages \
+  -H 'content-type: application/json' \
+  -H 'x-correlation-id: exemplo-1' \
+  -d '{"message":"Responda apenas: ok"}'
+```
+
+O endpoint de mensagens aceita texto de até 4.000 caracteres. Nesta etapa, todas as mensagens seguem pela rota `direct` para o Ollama. Os contratos de RAG e Tools serão adicionados nas fases correspondentes.

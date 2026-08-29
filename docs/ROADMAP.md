@@ -89,6 +89,8 @@ Decisão tomada: o OpenClaw foi retirado da arquitetura vigente; seus artefatos 
 
 Objetivo: oferecer um contrato de aplicação estável para qualquer cliente.
 
+Status: em andamento desde 2026-08-29. A base NestJS, o fluxo direto para o Ollama, os testes automatizados e uma inferência real foram validados; falta validar a imagem e a execução da API no Compose, além de completar os identificadores conversacionais e logs previstos na fase.
+
 Entregas:
 
 - Criar API NestJS com endpoint de saúde e endpoint de mensagens.

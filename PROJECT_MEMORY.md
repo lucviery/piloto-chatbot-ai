@@ -28,17 +28,17 @@ Atualizado em: 2026-08-29 UTC.
 - A Fase 1 foi concluída: Ollama 0.33.1 está saudável e restrito a `127.0.0.1:11434`; `deepseek-r1:7b` é o modelo padrão provisório.
 - O spike da Fase 2 reprovou OpenClaw + DeepSeek e o OpenClaw foi retirado da arquitetura vigente e do Compose.
 - A Fase 3 foi concluída: implementação, contratos de RAG/Tools, identificadores conversacionais, logs estruturados, testes, container e inferência real pela API foram validados.
-- A Fase 4 está em andamento: a interface Next.js e o fluxo real em Chrome estão aprovados; resta validar o serviço `web` no Compose.
+- A Fase 4 foi concluída: a interface Next.js, o serviço no Compose e o fluxo vertical real em Chrome estão aprovados.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: criada a interface Next.js responsiva e acessível com histórico da sessão, carregamento, erro, repetição e proxy server-side exclusivo para a API NestJS.
-- Verificações realizadas: tipagem, dois testes de componentes e build de produção aprovados; inspeção visual desktop aprovada; teste ponta a ponta real no Google Chrome abriu o site, enviou uma mensagem e exibiu `OK` do modelo local em 1,8 minuto; Compose validado estaticamente.
-- Trabalho em andamento: validação da imagem e do container do serviço `web`.
-- Próximo passo exato: executar `sudo docker compose up -d --build web`, confirmar o health check e abrir `http://127.0.0.1:3001`; então repetir o teste no Chrome contra o container e concluir a Fase 4.
-- Bloqueios conhecidos: esta sessão continua sem acesso efetivo ao socket Docker e `sudo` exige autenticação interativa. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam o fluxo web direto.
+- Última ação concluída: imagem do serviço `web` construída e iniciada no Compose; página, assets e fluxo real pelo Chrome foram aprovados no container.
+- Verificações realizadas: tipagem, dois testes de componentes e build de produção aprovados; inspeção visual desktop aprovada; página containerizada respondeu HTTP 200 com CSS e JavaScript; Playwright abriu o site em `127.0.0.1:3001`, enviou uma mensagem e exibiu `OK` do modelo local em 1,1 minuto.
+- Trabalho em andamento: nenhum.
+- Próximo passo exato: iniciar a Fase 5 provisionando PostgreSQL, definindo migrações e persistindo conversas e metadados estritamente necessários em tabelas próprias.
+- Bloqueios conhecidos: nenhum para iniciar a Fase 5. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam persistência e observabilidade.
 
 ## Decisões vigentes
 
@@ -76,6 +76,15 @@ Atualizado em: 2026-08-29 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-29 — Fase 4 concluída
+
+- A imagem Next.js foi construída e o serviço `web` iniciou corretamente no Docker Compose, restrito a `127.0.0.1:3001`.
+- A página respondeu HTTP 200 e serviu seus assets CSS e JavaScript no container.
+- O teste Playwright percorreu o fluxo containerizado completo no Google Chrome e exibiu a resposta `OK` do modelo local em 1,1 minuto.
+- O navegador acessou somente o site e sua rota `/api/messages`; API NestJS e Ollama permaneceram atrás do proxy server-side e da rede interna.
+- Todos os critérios de aceite da Fase 4 foram demonstrados e o Marco 1 do roadmap foi atingido.
+- A Fase 5 está liberada para persistência e observabilidade.
 
 ### 2026-08-29 — Interface e fluxo web da Fase 4 implementados
 

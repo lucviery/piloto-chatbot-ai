@@ -101,6 +101,14 @@ sh scripts/verify-restore-postgres.sh backups/piloto-chatbot.dump
 
 O teste de restauração nunca deve usar o banco principal como destino. Backups podem conter conversas e devem receber as mesmas proteções de acesso, retenção e descarte aplicadas ao banco.
 
+Para executar de uma vez os critérios operacionais da Fase 5 com dados não sensíveis já criados:
+
+```bash
+sudo sh scripts/validate-phase5.sh
+```
+
+O script reinicia apenas `postgres` e `api`, compara as contagens antes e depois, valida um backup em `piloto_restore_validation`, executa a retenção e remove o arquivo temporário de teste. Ele não remove volumes.
+
 Erros de acesso ao socket indicam que a sessão atual ainda não recebeu o grupo `docker`. Erros de download exigem verificar DNS, rota de saída e acesso ao registro de imagens. Falha no health check deve ser investigada pelos logs e pelo campo `State.Health` do `docker inspect`.
 
 ## Firewall e portas reservadas

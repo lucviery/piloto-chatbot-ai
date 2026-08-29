@@ -4,6 +4,12 @@
 
 O `piloto-chatbot-ai` é um chatbot self-hosted da Megauê, executado inicialmente em um servidor Ubuntu Server. O objetivo do MVP é validar uma arquitetura modular em que a interface web, a API da aplicação, a orquestração de IA, o modelo local, a recuperação documental e as integrações com sistemas da Megauê permaneçam claramente separadas.
 
+## Ambiente do piloto
+
+A máquina de trabalho atual será o ambiente integrado de desenvolvimento, testes e hospedagem do piloto. Ela deverá executar, conforme a implementação avançar, o site de entrada em Next.js, a API NestJS, o OpenClaw, o Ollama com o modelo local, o PostgreSQL com pgvector e os demais serviços necessários.
+
+Por ser um piloto, a prioridade é validar o fluxo completo com baixa complexidade operacional. Isso não elimina controles básicos: serviços devem permanecer isolados, somente portas necessárias devem ser expostas, segredos não devem ser versionados e mudanças no sistema devem ser proporcionais e rastreáveis. Docker Compose continua sendo o mecanismo preferencial para manter a pilha reproduzível e reduzir alterações globais na máquina.
+
 ## Arquitetura de alto nível
 
 ```text

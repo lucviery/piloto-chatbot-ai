@@ -47,3 +47,14 @@ Antes de considerar uma tarefa concluída:
 - Avalie o ambiente antes de instalar ou configurar software, conforme a diretriz obrigatória registrada em `PROJECT_CONTEXT.md`.
 - Não versione segredos. Use variáveis de ambiente e arquivos de exemplo sem valores reais.
 - Mantenha o RAG documental separado das consultas transacionais feitas por Tools/APIs oficiais.
+
+## Autonomia e permissões
+
+- Esta máquina é o ambiente integrado de desenvolvimento e testes do piloto e poderá hospedar todos os componentes do projeto.
+- Avance autonomamente em inspeções, implementação, testes e mudanças reversíveis restritas ao repositório e ao ambiente do piloto.
+- Solicite somente a permissão mínima necessária, com alvo e finalidade claros.
+- Agrupe aprovações semelhantes quando isso reduzir interrupções sem ampliar excessivamente o acesso.
+- Peça confirmação antes de elevar privilégios, instalar pacotes no sistema, alterar firewall ou rede, expor portas, modificar serviços externos à pilha do piloto, manipular segredos ou executar ações destrutivas.
+- Prefira containers, diretórios do projeto e configurações locais a mudanças globais no sistema quando forem tecnicamente adequados.
+- Não reutilize a autorização para o piloto como permissão para modificar componentes não relacionados desta máquina.
+- O fato de ser um piloto permite simplificar operação e disponibilidade, mas não autoriza ignorar segurança básica, isolamento de segredos, backups de dados relevantes ou verificações antes de mudanças.

@@ -21,16 +21,19 @@ Atualizado em: 2026-08-29 UTC.
 - Implantação inicial planejada com Docker Compose em Ubuntu Server.
 - O modelo local é o padrão no desenvolvimento; OpenAI API permanece apenas como alternativa ou fallback futuro configurável.
 - Kubernetes, K3s e canais externos estão fora do escopo inicial.
+- A máquina de trabalho atual foi definida como ambiente integrado de desenvolvimento, testes e hospedagem de toda a pilha do piloto.
+- Inventário da máquina registrado em `docs/ENVIRONMENT.md`: Ubuntu 26.04.1, 8 CPUs lógicas, 14 GiB de RAM, 84 GiB livres e somente GPU Intel integrada.
+- Node.js está instalado; Docker, Docker Compose, PostgreSQL e Ollama ainda não estão instalados.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: criada a estrutura de memória persistente do repositório com `AGENTS.md` e `PROJECT_MEMORY.md`, e adicionados os links correspondentes ao `README.md`.
-- Verificações realizadas: conteúdo documental existente e estado inicial do Git foram inspecionados antes das mudanças.
+- Última ação concluída: definido que a máquina atual hospedará e testará toda a pilha do piloto, com autonomia operacional e permissões mínimas.
+- Verificações realizadas: sistema, CPU, memória, armazenamento, GPU, ferramentas, processos, portas e pacotes Docker disponíveis foram inspecionados sem alterações.
 - Trabalho em andamento: nenhum.
-- Próximo passo exato: identificar o ambiente Ubuntu Server alvo e executar o inventário não destrutivo definido em `PROJECT_CONTEXT.md`.
-- Bloqueios conhecidos: nenhum.
+- Próximo passo exato: obter autorização administrativa mínima para instalar Docker Engine e Docker Compose pelo repositório do Ubuntu, então validar a instalação antes de adicionar serviços.
+- Bloqueios conhecidos: `sudo` exige autenticação interativa; o estado do UFW não pôde ser consultado sem essa autenticação.
 
 ## Decisões vigentes
 
@@ -40,6 +43,10 @@ Atualizado em: 2026-08-29 UTC.
 - O código, os testes e a configuração atual têm precedência quando divergirem de uma anotação antiga desta memória.
 - Conhecimento documental será atendido pelo RAG; dados transacionais atuais ou sensíveis serão consultados em tempo real por Tools conectadas às APIs oficiais da Megauê.
 - Antes de instalar ou configurar componentes do MVP, o ambiente alvo deve ser inventariado de forma não destrutiva.
+- A máquina atual é o ambiente alvo do piloto e poderá executar Next.js, NestJS, OpenClaw, Ollama/DeepSeek, PostgreSQL/pgvector e serviços auxiliares.
+- O trabalho deve avançar com autonomia em ações reversíveis e de baixo risco; permissões elevadas devem ser mínimas, justificadas e restritas ao alvo necessário.
+- Containers e configurações locais são preferíveis a alterações globais quando atenderem ao requisito.
+- A máquina não possui GPU dedicada; o primeiro modelo local deverá ser pequeno e quantizado, com medição de desempenho antes de qualquer expansão.
 
 ## Aprendizados validados
 
@@ -63,6 +70,13 @@ Atualizado em: 2026-08-29 UTC.
 5. Executar um teste local de inferência ponta a ponta antes de criar Next.js, NestJS ou o RAG.
 
 ## Histórico
+
+### 2026-08-29 — Máquina atual definida como ambiente integrado do piloto
+
+- Definido que a máquina atual hospedará o site, chatbot, banco de dados e os demais componentes do piloto.
+- Registrada a preferência por maior autonomia em ações seguras e solicitações de permissão mínimas e objetivas.
+- Mantidos os requisitos básicos de isolamento, proteção de segredos e avaliação prévia do ambiente.
+- Concluído o inventário inicial e registrado em `docs/ENVIRONMENT.md`.
 
 ### 2026-08-29 — Memória persistente criada
 

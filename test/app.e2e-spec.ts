@@ -8,6 +8,7 @@ import { Test } from '@nestjs/testing';
 import request = require('supertest');
 import { AppModule } from '../src/app.module';
 import { LlmService } from '../src/llm/llm.service';
+import { ConversationRepository } from '../src/database/conversation.repository';
 
 describe('API (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +18,8 @@ describe('API (e2e)', () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(LlmService)
       .useValue({ generate })
+      .overrideProvider(ConversationRepository)
+      .useValue({ saveInteraction: jest.fn().mockResolvedValue(undefined) })
       .compile();
 
     app = module.createNestApplication();
@@ -27,6 +30,9 @@ describe('API (e2e)', () => {
   afterAll(() => app.close());
 
   it('reports health', () => request(app.getHttpServer()).get('/health').expect(200, { status: 'ok' }));
+
+  it('reports unavailable readiness when dependencies are not configured', () =>
+    request(app.getHttpServer()).get('/health/ready').expect(503));
 
   it('returns an orchestrated message', async () => {
     generate.mockResolvedValueOnce({ content: 'Resposta local', model: 'test-model' });
@@ -67,5 +73,11 @@ describe('API (e2e)', () => {
       }),
     );
     return request(app.getHttpServer()).post('/messages').send({ message: 'Olá' }).expect(503);
+  });
+
+  it('exposes essential metrics without message content', async () => {
+    const response = await request(app.getHttpServer()).get('/metrics').expect(200);
+    expect(response.text).toContain('chatbot_http_requests_total');
+    expect(response.text).not.toContain('Resposta local');
   });
 });

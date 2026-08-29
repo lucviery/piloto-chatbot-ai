@@ -10,6 +10,7 @@ web/.next/
 web/test-results/
 web/playwright-report/
 *.tsbuildinfo
+backups/
 
 *.log
 .DS_Store

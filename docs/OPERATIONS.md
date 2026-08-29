@@ -77,6 +77,30 @@ docker compose logs --tail=200
 docker inspect piloto-chatbot-ai-smoke-1
 ```
 
+## PostgreSQL: migrações, retenção e recuperação
+
+O PostgreSQL não publica porta no host. A API aplica migrações pendentes na inicialização e registra cada versão em `schema_migrations`. O endpoint `GET /health/ready` verifica PostgreSQL e Ollama; `GET /metrics` expõe contadores essenciais sem conteúdo das mensagens.
+
+A política inicial do piloto retém conversas por 30 dias. Para executar a limpeza após o build da API:
+
+```bash
+docker compose exec api npm run retention:cleanup
+```
+
+Crie backup em formato customizado, fora dos volumes Docker:
+
+```bash
+sh scripts/backup-postgres.sh backups/piloto-chatbot.dump
+```
+
+Valide a restauração em um banco temporário isolado, que é removido ao final:
+
+```bash
+sh scripts/verify-restore-postgres.sh backups/piloto-chatbot.dump
+```
+
+O teste de restauração nunca deve usar o banco principal como destino. Backups podem conter conversas e devem receber as mesmas proteções de acesso, retenção e descarte aplicadas ao banco.
+
 Erros de acesso ao socket indicam que a sessão atual ainda não recebeu o grupo `docker`. Erros de download exigem verificar DNS, rota de saída e acesso ao registro de imagens. Falha no health check deve ser investigada pelos logs e pelo campo `State.Health` do `docker inspect`.
 
 ## Firewall e portas reservadas

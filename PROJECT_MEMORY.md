@@ -29,16 +29,17 @@ Atualizado em: 2026-08-29 UTC.
 - O spike da Fase 2 reprovou OpenClaw + DeepSeek e o OpenClaw foi retirado da arquitetura vigente e do Compose.
 - A Fase 3 foi concluída: implementação, contratos de RAG/Tools, identificadores conversacionais, logs estruturados, testes, container e inferência real pela API foram validados.
 - A Fase 4 foi concluída: a interface Next.js, o serviço no Compose e o fluxo vertical real em Chrome estão aprovados.
+- A Fase 5 está em andamento: PostgreSQL, migrações, persistência, readiness, métricas, retenção e recuperação foram implementados; a validação real aguarda a criação do segredo local do banco.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: imagem do serviço `web` construída e iniciada no Compose; página, assets e fluxo real pelo Chrome foram aprovados no container.
-- Verificações realizadas: tipagem, dois testes de componentes e build de produção aprovados; inspeção visual desktop aprovada; página containerizada respondeu HTTP 200 com CSS e JavaScript; Playwright abriu o site em `127.0.0.1:3001`, enviou uma mensagem e exibiu `OK` do modelo local em 1,1 minuto.
-- Trabalho em andamento: nenhum.
-- Próximo passo exato: iniciar a Fase 5 provisionando PostgreSQL, definindo migrações e persistindo conversas e metadados estritamente necessários em tabelas próprias.
-- Bloqueios conhecidos: nenhum para iniciar a Fase 5. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam persistência e observabilidade.
+- Última ação concluída: implementados PostgreSQL 18/pgvector, migração inicial idempotente, persistência transacional, readiness, métricas, retenção e procedimentos de backup/restauração.
+- Verificações realizadas: tipagem e build aprovados; seis testes unitários e sete testes HTTP aprovados; configuração Compose validada com senha efêmera somente no processo; scripts shell validados sintaticamente; auditoria npm sem vulnerabilidades conhecidas.
+- Trabalho em andamento: validação real do banco, reinício persistente e backup/restauração.
+- Próximo passo exato: criar `.env` local com `POSTGRES_PASSWORD` forte, executar `sudo docker compose up -d --build`, confirmar `/health/ready`, gerar uma conversa não sensível, reiniciar a pilha e validar backup/restauração.
+- Bloqueios conhecidos: o arquivo `.env` ainda não existe e o Compose exige deliberadamente uma senha PostgreSQL fora do Git. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam esta fase.
 
 ## Decisões vigentes
 
@@ -76,6 +77,15 @@ Atualizado em: 2026-08-29 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-29 — Base da Fase 5 implementada
+
+- Adicionado PostgreSQL 18 com pgvector 0.8.6, sem porta publicada e com volume persistente.
+- Criada migração versionada e idempotente para sessões, conversas e mensagens, aplicada automaticamente na inicialização da API.
+- Cada interação bem-sucedida passa a ser persistida em uma única transação após a resposta do modelo.
+- Adicionados readiness para PostgreSQL e Ollama, métricas essenciais em formato Prometheus e logs sem conteúdo das mensagens.
+- Definida retenção inicial de 30 dias e implementados limpeza, backup e validação de restauração em banco temporário.
+- A validação real aguarda a criação explícita do segredo local `POSTGRES_PASSWORD`.
 
 ### 2026-08-29 — Fase 4 concluída
 

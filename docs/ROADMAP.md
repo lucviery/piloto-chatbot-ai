@@ -131,6 +131,8 @@ Marco 1: chatbot local ponta a ponta sem RAG e sem Tools.
 
 Objetivo: tornar o fluxo diagnosticável e preparar dados próprios do chatbot.
 
+Status: em andamento desde 2026-08-29. PostgreSQL, migrações, persistência, readiness, métricas, retenção e procedimentos de backup foram implementados; resta validar a pilha, persistência após reinício e backup/restauração com dados não sensíveis.
+
 Entregas:
 
 - Adicionar PostgreSQL e migrações versionadas.

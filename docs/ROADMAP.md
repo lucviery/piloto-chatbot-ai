@@ -89,7 +89,7 @@ Decisão tomada: o OpenClaw foi retirado da arquitetura vigente; seus artefatos 
 
 Objetivo: oferecer um contrato de aplicação estável para qualquer cliente.
 
-Status: em andamento desde 2026-08-29. Implementação, contratos, testes automatizados, identificadores, logs e inferência real foram validados; falta somente construir e validar a API dentro do Compose, atualmente bloqueado pela autenticação administrativa interativa desta sessão.
+Status: concluída em 2026-08-29. Implementação, contratos, testes automatizados, identificadores, logs, execução no Compose e inferência real pelo endpoint da API foram validados.
 
 Entregas:
 

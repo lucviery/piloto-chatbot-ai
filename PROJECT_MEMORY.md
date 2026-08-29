@@ -27,17 +27,17 @@ Atualizado em: 2026-08-29 UTC.
 - O usuário `ia-user` pertence ao grupo `docker`; o daemon e a execução de containers foram validados.
 - A Fase 1 foi concluída: Ollama 0.33.1 está saudável e restrito a `127.0.0.1:11434`; `deepseek-r1:7b` é o modelo padrão provisório.
 - O spike da Fase 2 reprovou OpenClaw + DeepSeek e o OpenClaw foi retirado da arquitetura vigente e do Compose.
-- A Fase 3 está em andamento: implementação e testes estão completos, incluindo contratos de RAG/Tools, identificadores conversacionais, logs estruturados e inferência real; resta validar a API dentro do Compose.
+- A Fase 3 foi concluída: implementação, contratos de RAG/Tools, identificadores conversacionais, logs estruturados, testes, container e inferência real pela API foram validados.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: completados os identificadores de sessão, conversa, mensagem e correlação, os contratos explícitos de RAG e Tools e os logs HTTP estruturados sem conteúdo das mensagens.
-- Verificações realizadas: tipagem e build aprovados; quatro testes unitários e cinco testes HTTP ponta a ponta aprovados, cobrindo sucesso, entrada inválida, timeout e indisponibilidade; Compose validado estaticamente; a API atual retornou `OK` do `deepseek-r1:7b` em 30,261 s e registrou correlação, método, caminho, status e duração sem conteúdo sensível.
-- Trabalho em andamento: somente validação da imagem e do container da API.
-- Próximo passo exato: em uma sessão com acesso administrativo ao Docker, executar `sudo docker compose up -d --build api`, aguardar o health check e chamar `GET /health` e `POST /messages`; então registrar a Fase 3 como concluída.
-- Bloqueios conhecidos: nesta sessão, o processo não herdou acesso efetivo ao socket Docker; `sudo` exige autenticação interativa, impedindo somente a validação do container. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam o fluxo direto.
+- Última ação concluída: imagem da API construída e iniciada no Compose; `GET /health` e uma inferência real por `POST /messages` foram aprovados no container.
+- Verificações realizadas: tipagem e build aprovados; quatro testes unitários e cinco testes HTTP ponta a ponta aprovados, cobrindo sucesso, entrada inválida, timeout e indisponibilidade; Compose validado estaticamente; health check do container retornou `ok`; `deepseek-r1:7b` retornou `OK` pela API containerizada, preservando sessão, conversa, mensagem, correlação e rota `direct`.
+- Trabalho em andamento: nenhum.
+- Próximo passo exato: iniciar a Fase 4 criando a interface Next.js responsiva e acessível, integrada somente ao endpoint NestJS `POST /messages`.
+- Bloqueios conhecidos: nenhum para iniciar a Fase 4. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam o fluxo web direto.
 
 ## Decisões vigentes
 
@@ -75,6 +75,14 @@ Atualizado em: 2026-08-29 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-29 — Fase 3 concluída
+
+- A imagem da API foi construída e o serviço iniciou corretamente no Docker Compose.
+- O endpoint `GET /health` respondeu `{"status":"ok"}` no container.
+- O endpoint `POST /messages` chamou o `deepseek-r1:7b` pela rede interna e retornou `OK`, preservando IDs de sessão, conversa, mensagem e correlação.
+- Todos os critérios de aceite foram demonstrados: resposta real do modelo, erros consistentes para entrada inválida, timeout e indisponibilidade e logs rastreáveis sem conteúdo sensível.
+- A Fase 4 está liberada para implementar o primeiro fluxo web vertical.
 
 ### 2026-08-29 — Contrato conversacional e observabilidade da Fase 3 completos
 

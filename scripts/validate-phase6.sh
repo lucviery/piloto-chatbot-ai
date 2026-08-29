@@ -5,7 +5,7 @@ response_file=/tmp/piloto-chatbot-phase6-response.json
 trap 'rm -f "$response_file"' EXIT
 
 docker compose exec -T ollama ollama pull embeddinggemma:latest
-docker compose up -d --build --wait api web rag-scheduler
+docker compose up -d --build --wait api web
 docker compose exec -T api npm run rag:ingest
 docker compose exec -T api npm run rag:evaluate
 

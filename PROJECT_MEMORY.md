@@ -81,11 +81,12 @@ Atualizado em: 2026-08-29 UTC.
 ### 2026-08-29 — Escopo do corpus DokuWiki autorizado
 
 - Autorizada a indexação de todas as páginas públicas acessíveis em `https://dokuwiki.megaue.com.br`.
-- Definida atualização diária; ações técnicas, busca, histórico, mídia e administração ficam fora do crawler.
+- Inicialmente foi definida atualização diária; essa decisão foi substituída por atualização manual durante o piloto. Ações técnicas, busca, histórico, mídia e administração ficam fora do crawler.
 - Implementados versionamento documental, fragmentos vetoriais, ingestão idempotente, recuperação com limiar, fontes na API/interface e avaliação inicial com meta de 80%.
 - A primeira resposta RAG excedeu 180 segundos com cinco fragmentos no DeepSeek 7B em CPU; o contexto foi reduzido a três fragmentos de até 800 caracteres e a geração limitada a 512 tokens para nova validação.
 - A segunda validação confirmou rota `rag` e a fonte `criar_cortesia`, mas uma tentativa retornou `503` e outra foi truncada ao consumir 512 tokens em raciocínio; `think: false` foi aplicado no nível superior da API Ollama e o limite visível elevado a 768 tokens.
-- A validação com `think: false` retornou HTTP 201, rota `rag`, resposta completa e fonte `criar_cortesia` em cerca de 2,5 minutos; a atualização diária foi materializada no serviço `rag-scheduler` e aguarda inicialização no Compose.
+- A validação com `think: false` retornou HTTP 201, rota `rag`, resposta completa e fonte `criar_cortesia` em cerca de 2,5 minutos.
+- A atualização automática foi retirada por decisão do usuário; no piloto, a ingestão do DokuWiki será acionada manualmente quando necessário.
 
 ### 2026-08-29 — DokuWiki indicado como corpus inicial do RAG
 

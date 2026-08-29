@@ -69,4 +69,4 @@ No Compose, o site fica restrito ao loopback em `http://127.0.0.1:3001` por padr
 
 ## Conhecimento documental
 
-O RAG indexa diariamente as páginas públicas autorizadas de `https://dokuwiki.megaue.com.br`. Documentos são versionados por hash, fragmentados e armazenados no pgvector com URL e título. Respostas documentais retornam fontes clicáveis; ausência de similaridade suficiente mantém o fluxo direto, sem inventar evidência documental.
+O RAG indexa sob demanda as páginas públicas autorizadas de `https://dokuwiki.megaue.com.br`. Documentos são versionados por hash, fragmentados e armazenados no pgvector com URL e título. Respostas documentais retornam fontes clicáveis; ausência de similaridade suficiente mantém o fluxo direto, sem inventar evidência documental.

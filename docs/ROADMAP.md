@@ -151,7 +151,7 @@ Critérios de aceite:
 
 Objetivo: responder perguntas documentais com rastreabilidade.
 
-Status: em andamento desde 2026-08-29. Fonte, autorização, escopo público e atualização diária foram definidos; esquema vetorial, ingestão, recuperação, fontes e avaliação foram implementados e aguardam validação real.
+Status: em andamento desde 2026-08-29. Fonte, autorização, escopo público e atualização manual foram definidos; esquema vetorial, ingestão, recuperação, fontes e avaliação foram implementados e validados. Resta o encerramento documental da fase.
 
 Fonte inicial indicada: `https://dokuwiki.megaue.com.br`. A autorização de indexação, o escopo de páginas e a política de atualização ainda serão confirmados. Cada fragmento deverá preservar URL canônica, título, data de coleta e versão do conteúdo.
 

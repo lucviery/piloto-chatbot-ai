@@ -109,7 +109,7 @@ sudo sh scripts/validate-phase5.sh
 
 O script reinicia apenas `postgres` e `api`, compara as contagens antes e depois, valida um backup em `piloto_restore_validation`, executa a retenção e remove o arquivo temporário de teste. Ele não remove volumes.
 
-## RAG: ingestão diária e avaliação
+## RAG: ingestão manual e avaliação
 
 O corpus autorizado é `https://dokuwiki.megaue.com.br`, limitado às páginas públicas listadas no índice. A ingestão usa exportação XHTML, versiona por hash SHA-256 e preserva URL, título e data de coleta.
 
@@ -122,7 +122,11 @@ sudo docker compose exec api npm run rag:ingest
 sudo docker compose exec api npm run rag:evaluate
 ```
 
-A avaliação exige ao menos 80% de acerto no documento esperado. O serviço `rag-scheduler` executa nova ingestão a cada 86.400 segundos por padrão; o intervalo pode ser alterado por `RAG_INTERVAL_SECONDS`. Falhas aparecem nos logs do serviço e o container reinicia sem perder o índice atual.
+A avaliação exige ao menos 80% de acerto no documento esperado. No piloto, a atualização é manual. Quando quiser sincronizar novamente o DokuWiki, execute:
+
+```bash
+sudo docker compose exec -T api npm run rag:ingest
+```
 
 Para executar toda a validação operacional da Fase 6, incluindo download do modelo, rebuild, ingestão, avaliação e uma resposta real com fontes:
 

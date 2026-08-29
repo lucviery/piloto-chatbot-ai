@@ -68,6 +68,8 @@ Critérios de aceite:
 
 Objetivo: remover o maior risco de integração antes de criar as aplicações.
 
+Status: spike concluído em 2026-08-29, mas integração não aprovada. O 7B expirou e o 1.5B não entregou resposta visível; a Fase 3 aguarda revisão do orquestrador/modelo. Evidências em `docs/PHASE2_RESULTS.md`.
+
 Entregas:
 
 - Confirmar projeto, versão, licença, modo de instalação e contrato de integração do OpenClaw.
@@ -141,6 +143,8 @@ Critérios de aceite:
 ## Fase 6 — RAG documental com pgvector
 
 Objetivo: responder perguntas documentais com rastreabilidade.
+
+Fonte inicial definida: um site autorizado, cuja URL e permissão de indexação ainda serão confirmadas. Cada fragmento deverá preservar URL canônica, título, data de coleta e versão do conteúdo.
 
 Entregas:
 

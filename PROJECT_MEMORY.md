@@ -26,6 +26,7 @@ Atualizado em: 2026-08-29 UTC.
 - Node.js, Docker Engine 29.1.3 e Docker Compose 2.40.3 estão instalados; PostgreSQL e Ollama ainda não estão instalados.
 - O usuário `ia-user` pertence ao grupo `docker`; o daemon e a execução de containers foram validados.
 - A Fase 1 foi concluída: Ollama 0.33.1 está saudável e restrito a `127.0.0.1:11434`; `deepseek-r1:7b` é o modelo padrão provisório.
+- O spike da Fase 2 foi concluído, mas OpenClaw + DeepSeek não foi aprovado: 7B expira e 1.5B termina sem resposta visível.
 
 ## Ponto de retomada
 
@@ -33,9 +34,9 @@ Atualizado em: 2026-08-29 UTC.
 
 - Última ação concluída: comparados `deepseek-r1:1.5b` e `deepseek-r1:7b` pela API local do Ollama; o 7B foi aceito provisoriamente.
 - Verificações realizadas: três prompts por modelo; 7B com 5,34–6,10 tokens/s, carga de 5,64 s e 6,00 GiB observados; serviço saudável após reinício; modelos persistidos; API vinculada somente a `127.0.0.1:11434`.
-- Trabalho em andamento: nenhum.
-- Próximo passo exato: iniciar a Fase 2 confirmando versão, licença e contrato do OpenClaw e integrando-o ao Ollama.
-- Bloqueios conhecidos: nenhum para iniciar a Fase 2. O UFW está inativo; o Ollama está protegido por bind em loopback.
+- Trabalho em andamento: decisão arquitetural após o spike da Fase 2.
+- Próximo passo exato: escolher entre testar outro modelo local instrucional compatível com Tools, simplificar/substituir o OpenClaw ou usar hardware/provedor alternativo; então repetir o teste antes da Fase 3.
+- Bloqueios conhecidos: OpenClaw 2026.7.1 com DeepSeek 7B excede 120 s em CPU; com 1.5B termina em 67,8 s, mas entrega `NO_REPLY`. A Fase 3 não deve começar enquanto não houver um fluxo aprovado.
 
 ## Decisões vigentes
 
@@ -59,8 +60,9 @@ Atualizado em: 2026-08-29 UTC.
 ## Hipóteses a validar
 
 - Capacidade do servidor alvo para executar o modelo DeepSeek escolhido com latência aceitável.
-- Versões exatas e contratos de integração entre OpenClaw, Ollama, NestJS e os demais serviços.
+- Modelo/orquestrador alternativo capaz de cumprir o contrato dentro da capacidade desta máquina.
 - Modelo de embeddings, estratégia de fragmentação e critérios de qualidade do RAG.
+- URL do site inicial do RAG, autorização de indexação, escopo de páginas e política de atualização.
 - Requisitos de autenticação, autorização, auditoria e retenção de conversas.
 
 ## Próximos passos
@@ -72,6 +74,20 @@ Atualizado em: 2026-08-29 UTC.
 5. Executar um teste local de inferência ponta a ponta antes de criar Next.js, NestJS ou o RAG.
 
 ## Histórico
+
+### 2026-08-29 — Spike da Fase 2 concluído sem aprovação
+
+- Confirmados projeto oficial, licença MIT, imagem `2026.7.1-2` e protocolo nativo Ollama `/api/chat`.
+- Criado perfil Compose isolado, sem Tools, skills, canais ou Gateway publicado.
+- O DeepSeek 7B atingiu timeout; o 1.5B concluiu, mas produziu `NO_REPLY`.
+- A indisponibilidade do Ollama gerou erro explícito e código 1, sem resposta inventada.
+- A Fase 3 foi suspensa até revisão do modelo, orquestrador ou infraestrutura.
+
+### 2026-08-29 — Site definido como fonte inicial do RAG
+
+- O primeiro corpus documental será coletado de um site autorizado.
+- A ingestão deverá ser idempotente e preservar URL canônica, título, data de coleta, versão e rastreabilidade por fragmento.
+- A URL, a autorização de indexação e o escopo de páginas permanecem pendentes.
 
 ### 2026-08-29 — Fase 1 concluída
 

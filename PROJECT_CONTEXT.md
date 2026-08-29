@@ -56,6 +56,8 @@ O MVP será implantado com Docker Compose. Kubernetes e K3s estão fora do escop
 
 ### OpenClaw
 
+O OpenClaw permanece como candidato, não como componente aprovado. O spike de 2026-08-29 confirmou a integração técnica com Ollama, mas não atingiu simultaneamente qualidade e latência aceitáveis nos modelos DeepSeek testados; consulte `docs/PHASE2_RESULTS.md` antes de avançar para a API.
+
 - Orquestrar o fluxo de IA e decidir quando responder diretamente, consultar documentos ou executar uma Tool.
 - Construir prompts e fornecer ao modelo apenas o contexto necessário.
 - Integrar-se ao Ollama no ambiente local.
@@ -84,9 +86,9 @@ O MVP será implantado com Docker Compose. Kubernetes e K3s estão fora do escop
 
 ### Pipeline de ingestão
 
-- Receber fontes documentais autorizadas.
+- Receber fontes documentais autorizadas; o corpus inicial será um site cuja URL, permissão e escopo ainda serão confirmados.
 - Extrair e limpar texto, dividir o conteúdo em fragmentos e gerar embeddings.
-- Registrar metadados, versão, origem e permissões do conteúdo.
+- Registrar URL canônica, título, data de coleta, metadados, versão, origem e permissões do conteúdo.
 - Atualizar ou invalidar documentos de forma controlada e idempotente.
 
 ### Tools/APIs da Megauê

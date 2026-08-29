@@ -1,0 +1,46 @@
+{
+  "agents": {
+    "defaults": {
+      "workspace": "/home/node/.openclaw/workspace",
+      "skills": [],
+      "bootstrapMaxChars": 1000,
+      "bootstrapTotalMaxChars": 3000,
+      "timeoutSeconds": 300,
+      "model": {
+        "primary": "ollama/deepseek-r1:1.5b"
+      },
+      "models": {
+        "ollama/deepseek-r1:1.5b": {}
+      }
+    }
+  },
+  "models": {
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://ollama:11434",
+        "apiKey": "ollama-local",
+        "api": "ollama",
+        "timeoutSeconds": 120,
+        "models": [
+          {
+            "id": "deepseek-r1:1.5b",
+            "name": "DeepSeek R1 1.5B local (spike)",
+            "reasoning": true,
+            "input": ["text"],
+            "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0},
+            "contextWindow": 16384,
+            "maxTokens": 256,
+            "params": {
+              "num_ctx": 16384,
+              "thinking": false,
+              "temperature": 0
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tools": {
+    "deny": ["*"]
+  }
+}

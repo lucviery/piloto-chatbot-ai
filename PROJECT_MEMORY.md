@@ -16,24 +16,25 @@ Atualizado em: 2026-08-29 UTC.
 
 - Repositório GitHub: `lucviery/piloto-chatbot-ai`.
 - Branch principal: `main`.
-- O repositório contém documentação de contexto e um diagrama de arquitetura; a implementação do MVP ainda não foi iniciada.
+- A base versionável da Fase 0 foi iniciada com Compose mínimo, health check, `.env.example`, política de segredos e procedimentos operacionais.
 - Arquitetura planejada: Next.js, NestJS, OpenClaw, Ollama com DeepSeek e PostgreSQL com pgvector.
 - Implantação inicial planejada com Docker Compose em Ubuntu Server.
 - O modelo local é o padrão no desenvolvimento; OpenAI API permanece apenas como alternativa ou fallback futuro configurável.
 - Kubernetes, K3s e canais externos estão fora do escopo inicial.
 - A máquina de trabalho atual foi definida como ambiente integrado de desenvolvimento, testes e hospedagem de toda a pilha do piloto.
 - Inventário da máquina registrado em `docs/ENVIRONMENT.md`: Ubuntu 26.04.1, 8 CPUs lógicas, 14 GiB de RAM, 84 GiB livres e somente GPU Intel integrada.
-- Node.js está instalado; Docker, Docker Compose, PostgreSQL e Ollama ainda não estão instalados.
+- Node.js, Docker Engine 29.1.3 e Docker Compose 2.40.3 estão instalados; PostgreSQL e Ollama ainda não estão instalados.
+- O usuário `ia-user` ainda não tem acesso ao socket Docker. A validação de containers depende de um administrador adicioná-lo ao grupo `docker` e da renovação da sessão.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: criado o roadmap do MVP em `docs/ROADMAP.md`, com dez fases, dependências, marcos e critérios de aceite.
-- Verificações realizadas: roadmap comparado à arquitetura, ao inventário da máquina e à ordem de implementação definida no contexto.
-- Trabalho em andamento: nenhum.
-- Próximo passo exato: iniciar a Fase 0 obtendo autorização administrativa mínima para consultar o firewall e instalar Docker Engine e Docker Compose.
-- Bloqueios conhecidos: `sudo` exige autenticação interativa; o estado do UFW não pôde ser consultado sem essa autenticação.
+- Última ação concluída: criada a base versionável da Fase 0 (`compose.yaml`, `.env.example`, `.gitignore` e `docs/OPERATIONS.md`) e atualizado o inventário com o Docker já encontrado na máquina.
+- Verificações realizadas: `docker --version` retornou 29.1.3, `docker compose version` retornou 2.40.3, `docker compose config --quiet` passou e `git diff --check` passou. `docker info` e `docker run --rm hello-world` foram tentados e falharam por falta de permissão no socket.
+- Trabalho em andamento: Fase 0 parcialmente concluída; faltam as validações administrativas e de runtime.
+- Próximo passo exato: um administrador executar `sudo usermod -aG docker ia-user` e `sudo ufw status verbose`; depois renovar a sessão e executar os testes descritos em `docs/OPERATIONS.md`.
+- Bloqueios conhecidos: `sudo` exige autenticação interativa; o usuário atual não pertence ao grupo `docker`; o estado do UFW e o runtime do Compose não puderam ser validados.
 
 ## Decisões vigentes
 
@@ -70,6 +71,13 @@ Atualizado em: 2026-08-29 UTC.
 5. Executar um teste local de inferência ponta a ponta antes de criar Next.js, NestJS ou o RAG.
 
 ## Histórico
+
+### 2026-08-29 — Base versionável da Fase 0 preparada
+
+- Confirmada a instalação prévia do Docker Engine 29.1.3 e Docker Compose 2.40.3, corrigindo o inventário anterior.
+- Criado Compose mínimo sem portas publicadas, com health check, volume nomeado, sistema de arquivos somente leitura e `no-new-privileges`.
+- Documentados configuração, diagnóstico, encerramento e limpeza segura.
+- A validação estática passou; a validação do daemon, `hello-world`, subida do Compose e UFW permanece bloqueada pela autenticação administrativa interativa.
 
 ### 2026-08-29 — Roadmap executável do MVP definido
 

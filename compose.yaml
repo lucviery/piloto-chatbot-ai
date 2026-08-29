@@ -1,0 +1,35 @@
+name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}
+
+services:
+  smoke:
+    image: alpine:3.22.1
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        mkdir -p /data/www
+        printf 'piloto-chatbot-ai: ok\n' > /data/www/index.html
+        exec httpd -f -p ${SMOKE_INTERNAL_PORT:-8080} -h /data/www
+    environment:
+      SMOKE_INTERNAL_PORT: ${SMOKE_INTERNAL_PORT:-8080}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "wget -q -O - http://127.0.0.1:$${SMOKE_INTERNAL_PORT}/ | grep -q 'piloto-chatbot-ai: ok'"
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    volumes:
+      - smoke-data:/data
+    restart: unless-stopped
+
+volumes:
+  smoke-data:
+    name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}-smoke-data

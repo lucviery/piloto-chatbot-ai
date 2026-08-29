@@ -20,8 +20,8 @@ Esta máquina é o ambiente integrado de desenvolvimento, testes e hospedagem do
 - Node.js: 22.22.1.
 - npm: 9.2.0.
 - Python: 3.14.4.
-- Docker: ausente.
-- Docker Compose: ausente.
+- Docker Engine: 29.1.3 (pacote Ubuntu `docker.io` 29.1.3-0ubuntu4.1).
+- Docker Compose: 2.40.3 (pacote Ubuntu `docker-compose-v2` 2.40.3+ds1-0ubuntu1).
 - Podman: ausente.
 - pnpm e Yarn: ausentes.
 - Cliente PostgreSQL (`psql`): ausente.
@@ -33,11 +33,12 @@ Esta máquina é o ambiente integrado de desenvolvimento, testes e hospedagem do
 - Porta TCP 22 em escuta em IPv4 e IPv6 para SSH.
 - Nenhuma porta da aplicação, banco ou Ollama estava em escuta.
 - O estado do UFW não pôde ser consultado sem autenticação administrativa e permanece pendente.
+- O socket do Docker existe, mas o usuário `ia-user` ainda não pertence ao grupo `docker`; por isso a validação do daemon e dos containers permanece pendente.
 
-## Pacotes disponíveis no Ubuntu
+## Pacotes instalados pelo Ubuntu
 
-- `docker.io`: candidato 29.1.3-0ubuntu4.1.
-- `docker-compose-v2`: candidato 2.40.3+ds1-0ubuntu1.
+- `docker.io`: instalado em 29.1.3-0ubuntu4.1.
+- `docker-compose-v2`: instalado em 2.40.3+ds1-0ubuntu1.
 
 As versões devem ser confirmadas novamente imediatamente antes da instalação, pois os repositórios do sistema podem mudar.
 
@@ -50,7 +51,7 @@ As versões devem ser confirmadas novamente imediatamente antes da instalação,
 
 ## Pendências antes da instalação
 
-1. Confirmar acesso administrativo para instalar Docker e consultar/configurar o firewall.
+1. Um administrador deve adicionar `ia-user` ao grupo `docker`, renovar a sessão e consultar o firewall.
 2. Definir o modelo DeepSeek inicial compatível com CPU e 14 GiB de RAM.
 3. Definir portas internas da composição, mantendo banco, Ollama e serviços internos sem exposição pública.
 4. Confirmar como o site será acessado inicialmente: somente rede local ou internet.

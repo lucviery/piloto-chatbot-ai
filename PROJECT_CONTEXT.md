@@ -22,6 +22,10 @@ OpenClaw
   `-- Tools/APIs: sistemas e dados transacionais da Megauê
 ```
 
+### Diagrama da arquitetura
+
+![Arquitetura do piloto-chatbot-ai](docs/arquitetura-piloto-chatbot-ai.svg)
+
 No ambiente de desenvolvimento, a inferência deve usar o DeepSeek executado localmente pelo Ollama. A arquitetura deve permitir, futuramente, o uso da API da OpenAI como provedor alternativo ou fallback, sem acoplar a aplicação a um único modelo.
 
 O MVP será implantado com Docker Compose. Kubernetes e K3s estão fora do escopo inicial e só deverão ser considerados caso necessidades reais de escala, alta disponibilidade ou operação justifiquem a complexidade adicional.

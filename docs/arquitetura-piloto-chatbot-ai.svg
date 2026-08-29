@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitetura do piloto-chatbot-ai</title>
+  <desc id="desc">Fluxo do usuário pelo Next.js, NestJS e OpenClaw, com inteligência artificial local, RAG documental e APIs transacionais da Megauê.</desc>
+  <defs>
+    <style>
+      text { font-family: Inter, Arial, sans-serif; fill: #172033; }
+      .title { font-size: 38px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #536078; }
+      .group-title { font-size: 20px; font-weight: 700; }
+      .node-title { font-size: 20px; font-weight: 700; }
+      .node-copy { font-size: 15px; fill: #445066; }
+      .edge-label { font-size: 14px; font-weight: 600; fill: #536078; }
+      .group { stroke-width: 2; rx: 24; }
+      .node { stroke-width: 2; rx: 14; }
+      .arrow { fill: none; stroke: #65728a; stroke-width: 3; marker-end: url(#arrow); }
+      .arrow-dashed { fill: none; stroke: #7c3aed; stroke-width: 3; stroke-dasharray: 9 8; marker-end: url(#arrow-purple); }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#65728a"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#7c3aed"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#172033" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1100" fill="#f7f9fc"/>
+  <text x="800" y="58" text-anchor="middle" class="title">Arquitetura — piloto-chatbot-ai</text>
+  <text x="800" y="90" text-anchor="middle" class="subtitle">Chatbot Megauê self-hosted em Ubuntu Server • MVP com Docker Compose</text>
+
+  <!-- Fluxo principal -->
+  <rect x="80" y="135" width="1440" height="190" class="group" fill="#eef5ff" stroke="#9ec5ff"/>
+  <text x="110" y="172" class="group-title" fill="#1d4ed8">Aplicação e orquestração</text>
+
+  <g filter="url(#shadow)">
+    <rect x="130" y="205" width="210" height="82" class="node" fill="#ffffff" stroke="#2563eb"/>
+    <text x="235" y="238" text-anchor="middle" class="node-title">Usuário</text>
+    <text x="235" y="263" text-anchor="middle" class="node-copy">Web ou canal externo</text>
+
+    <rect x="440" y="205" width="210" height="82" class="node" fill="#ffffff" stroke="#2563eb"/>
+    <text x="545" y="238" text-anchor="middle" class="node-title">Next.js</text>
+    <text x="545" y="263" text-anchor="middle" class="node-copy">Interface do chatbot</text>
+
+    <rect x="750" y="205" width="210" height="82" class="node" fill="#ffffff" stroke="#2563eb"/>
+    <text x="855" y="238" text-anchor="middle" class="node-title">NestJS</text>
+    <text x="855" y="263" text-anchor="middle" class="node-copy">API, sessões e segurança</text>
+
+    <rect x="1060" y="195" width="350" height="102" class="node" fill="#fff7db" stroke="#d97706"/>
+    <text x="1235" y="234" text-anchor="middle" class="node-title">OpenClaw</text>
+    <text x="1235" y="260" text-anchor="middle" class="node-copy">Roteamento, contexto e Tools</text>
+    <text x="1235" y="281" text-anchor="middle" class="node-copy">Orquestração central de IA</text>
+  </g>
+
+  <path d="M340 246 H430" class="arrow"/>
+  <path d="M650 246 H740" class="arrow"/>
+  <path d="M960 246 H1050" class="arrow"/>
+
+  <!-- IA -->
+  <rect x="80" y="375" width="450" height="470" class="group" fill="#f5f1ff" stroke="#c4b5fd"/>
+  <text x="110" y="415" class="group-title" fill="#6d28d9">Inteligência artificial</text>
+
+  <g filter="url(#shadow)">
+    <rect x="135" y="465" width="340" height="95" class="node" fill="#ffffff" stroke="#7c3aed"/>
+    <text x="305" y="502" text-anchor="middle" class="node-title">Ollama</text>
+    <text x="305" y="530" text-anchor="middle" class="node-copy">Servidor local de modelos</text>
+
+    <rect x="135" y="625" width="340" height="95" class="node" fill="#ffffff" stroke="#7c3aed"/>
+    <text x="305" y="662" text-anchor="middle" class="node-title">DeepSeek</text>
+    <text x="305" y="690" text-anchor="middle" class="node-copy">Modelo principal no DEV</text>
+
+    <rect x="135" y="755" width="340" height="62" class="node" fill="#faf8ff" stroke="#a78bfa" stroke-dasharray="8 6"/>
+    <text x="305" y="782" text-anchor="middle" class="node-title">OpenAI API</text>
+    <text x="305" y="804" text-anchor="middle" class="node-copy">Fallback futuro</text>
+  </g>
+
+  <path d="M305 560 V615" class="arrow"/>
+
+  <!-- RAG -->
+  <rect x="575" y="375" width="450" height="470" class="group" fill="#effcf3" stroke="#86dba3"/>
+  <text x="605" y="415" class="group-title" fill="#15803d">RAG documental</text>
+
+  <g filter="url(#shadow)">
+    <rect x="630" y="455" width="340" height="90" class="node" fill="#ffffff" stroke="#16a34a"/>
+    <text x="800" y="491" text-anchor="middle" class="node-title">Documentos</text>
+    <text x="800" y="518" text-anchor="middle" class="node-copy">Manuais, políticas e FAQs</text>
+
+    <rect x="630" y="605" width="340" height="95" class="node" fill="#ffffff" stroke="#16a34a"/>
+    <text x="800" y="642" text-anchor="middle" class="node-title">Pipeline de ingestão</text>
+    <text x="800" y="670" text-anchor="middle" class="node-copy">Fragmentação e embeddings</text>
+
+    <rect x="630" y="760" width="340" height="62" class="node" fill="#ffffff" stroke="#16a34a"/>
+    <text x="800" y="786" text-anchor="middle" class="node-title">PostgreSQL + pgvector</text>
+    <text x="800" y="808" text-anchor="middle" class="node-copy">Vetores e metadados</text>
+  </g>
+
+  <path d="M800 545 V595" class="arrow"/>
+  <path d="M800 700 V750" class="arrow"/>
+
+  <!-- Dados transacionais -->
+  <rect x="1070" y="375" width="450" height="470" class="group" fill="#fff2f2" stroke="#f5a3a3"/>
+  <text x="1100" y="415" class="group-title" fill="#b91c1c">Dados transacionais</text>
+
+  <g filter="url(#shadow)">
+    <rect x="1125" y="490" width="340" height="105" class="node" fill="#ffffff" stroke="#dc2626"/>
+    <text x="1295" y="530" text-anchor="middle" class="node-title">Tools Megauê</text>
+    <text x="1295" y="558" text-anchor="middle" class="node-copy">Operações autorizadas</text>
+    <text x="1295" y="580" text-anchor="middle" class="node-copy">e respostas estruturadas</text>
+
+    <rect x="1125" y="680" width="340" height="115" class="node" fill="#ffffff" stroke="#dc2626"/>
+    <text x="1295" y="720" text-anchor="middle" class="node-title">APIs e sistemas Megauê</text>
+    <text x="1295" y="748" text-anchor="middle" class="node-copy">Pedidos, vendas e eventos</text>
+    <text x="1295" y="771" text-anchor="middle" class="node-copy">Pagamentos e ingressos</text>
+  </g>
+
+  <path d="M1295 595 V670" class="arrow"/>
+
+  <!-- Ligações do OpenClaw -->
+  <path d="M1180 297 C1000 350 540 345 430 455" class="arrow"/>
+  <text x="670" y="347" class="edge-label">Inferência local</text>
+
+  <path d="M1235 297 C1130 350 930 340 835 445" class="arrow"/>
+  <text x="943" y="365" class="edge-label">Busca semântica</text>
+
+  <path d="M1290 297 V480" class="arrow"/>
+  <text x="1310" y="365" class="edge-label">Consulta ou ação</text>
+
+  <path d="M1060 270 C865 345 520 735 475 785" class="arrow-dashed"/>
+  <text x="590" y="720" class="edge-label" fill="#7c3aed">Fallback configurável</text>
+
+  <!-- Legenda conceitual -->
+  <rect x="80" y="895" width="1440" height="150" rx="22" fill="#ffffff" stroke="#d8deea" stroke-width="2"/>
+  <text x="110" y="935" class="group-title">Regra de separação</text>
+  <circle cx="125" cy="978" r="10" fill="#16a34a"/>
+  <text x="150" y="984" class="node-copy">Conhecimento relativamente estável → RAG documental</text>
+  <circle cx="700" cy="978" r="10" fill="#dc2626"/>
+  <text x="725" y="984" class="node-copy">Dados atuais e sensíveis → Tools/APIs Megauê</text>
+  <circle cx="1240" cy="978" r="10" fill="#7c3aed"/>
+  <text x="1265" y="984" class="node-copy">OpenAI → alternativa futura</text>
+  <text x="800" y="1022" text-anchor="middle" class="subtitle">O modelo nunca acessa diretamente bancos ou APIs transacionais.</text>
+</svg>

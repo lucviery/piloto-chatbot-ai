@@ -6,7 +6,7 @@ O `piloto-chatbot-ai` é um chatbot self-hosted da Megauê, executado inicialmen
 
 ## Ambiente do piloto
 
-A máquina de trabalho atual será o ambiente integrado de desenvolvimento, testes e hospedagem do piloto. Ela deverá executar, conforme a implementação avançar, o site de entrada em Next.js, a API NestJS, o OpenClaw, o Ollama com o modelo local, o PostgreSQL com pgvector e os demais serviços necessários.
+A máquina de trabalho atual será o ambiente integrado de desenvolvimento, testes e hospedagem do piloto. Ela deverá executar, conforme a implementação avançar, o site de entrada em Next.js, a API e orquestração modular em NestJS, o Ollama com o modelo local, o PostgreSQL com pgvector e os demais serviços necessários.
 
 Por ser um piloto, a prioridade é validar o fluxo completo com baixa complexidade operacional. Isso não elimina controles básicos: serviços devem permanecer isolados, somente portas necessárias devem ser expostas, segredos não devem ser versionados e mudanças no sistema devem ser proporcionais e rastreáveis. Docker Compose continua sendo o mecanismo preferencial para manter a pilha reproduzível e reduzir alterações globais na máquina.
 
@@ -22,7 +22,7 @@ Next.js
 NestJS
   |
   v
-OpenClaw
+Orquestração NestJS
   |-- LLM local: Ollama + DeepSeek
   |-- RAG documental: PostgreSQL + pgvector
   `-- Tools/APIs: sistemas e dados transacionais da Megauê
@@ -43,38 +43,37 @@ O MVP será implantado com Docker Compose. Kubernetes e K3s estão fora do escop
 - Fornecer a interface do chatbot para o usuário.
 - Capturar mensagens e exibir respostas, estados de carregamento e erros.
 - Manter apenas o estado de apresentação necessário.
-- Consumir a API do NestJS; não acessar diretamente OpenClaw, Ollama, banco de dados ou APIs internas da Megauê.
+- Consumir a API do NestJS; não acessar diretamente Ollama, banco de dados ou APIs internas da Megauê.
 
 ### NestJS
 
 - Ser a API de entrada e a camada de aplicação do chatbot.
 - Autenticar e autorizar usuários quando esse requisito for introduzido.
 - Validar requisições, administrar sessões e conversas e aplicar regras de negócio da aplicação.
-- Encaminhar solicitações ao OpenClaw e normalizar as respostas para o Next.js.
+- Orquestrar respostas diretas, recuperação documental e Tools por módulos internos com contratos explícitos.
 - Centralizar observabilidade, tratamento de erros, limites de uso e auditoria das chamadas.
 - Evitar incorporar lógica específica de modelo ou executar consultas transacionais diretamente quando essas operações pertencerem a Tools bem definidas.
 
-### OpenClaw
+### Orquestração modular no NestJS
 
-O OpenClaw permanece como candidato, não como componente aprovado. O spike de 2026-08-29 confirmou a integração técnica com Ollama, mas não atingiu simultaneamente qualidade e latência aceitáveis nos modelos DeepSeek testados; consulte `docs/PHASE2_RESULTS.md` antes de avançar para a API.
+O OpenClaw foi retirado da arquitetura vigente após o spike de 2026-08-29. A orquestração do MVP será implementada em módulos internos do NestJS, mantendo interfaces que permitam substituir essa implementação futuramente.
 
-- Orquestrar o fluxo de IA e decidir quando responder diretamente, consultar documentos ou executar uma Tool.
-- Construir prompts e fornecer ao modelo apenas o contexto necessário.
-- Integrar-se ao Ollama no ambiente local.
-- Consultar o mecanismo de RAG documental.
-- Selecionar e executar Tools/APIs autorizadas da Megauê.
-- Manter as decisões de orquestração desacopladas da interface e da API pública da aplicação.
+- `OrchestratorModule`: decidir entre resposta direta, RAG e Tool.
+- `LlmModule`: encapsular Ollama e futuros provedores alternativos.
+- `RagModule`: recuperar contexto documental com fontes rastreáveis.
+- `ToolsModule`: executar somente integrações transacionais autorizadas.
+- Construir prompts mínimos, validar saídas e retornar erros explícitos quando dependências falharem.
 
 ### Ollama
 
 - Servir modelos de linguagem localmente.
-- Disponibilizar uma interface de inferência consumida pelo OpenClaw.
+- Disponibilizar uma interface de inferência consumida pelo `LlmModule` do NestJS.
 - Permitir troca e avaliação de modelos sem alterar Next.js ou NestJS.
 
 ### DeepSeek
 
 - Ser o modelo de linguagem principal no ambiente de desenvolvimento.
-- Interpretar solicitações, elaborar respostas e apoiar a decisão de uso do contexto e das Tools, sob a orquestração do OpenClaw.
+- Interpretar solicitações e elaborar respostas sob a orquestração do NestJS, sem decidir ou executar diretamente acesso a dados.
 - Não acessar diretamente bancos, documentos ou APIs da Megauê.
 
 ### PostgreSQL + pgvector
@@ -95,7 +94,7 @@ O OpenClaw permanece como candidato, não como componente aprovado. O spike de 2
 
 - Consultar ou executar operações nos sistemas transacionais oficiais.
 - Aplicar autenticação, autorização, validação e auditoria por operação.
-- Expor contratos claros e respostas estruturadas ao OpenClaw.
+- Expor contratos claros e respostas estruturadas ao `ToolsModule` do NestJS.
 - Manter os sistemas da Megauê como fonte de verdade para informações dinâmicas, como pedidos, pagamentos, ingressos, eventos, clientes e saldos.
 
 ## Separação entre RAG documental e dados transacionais
@@ -119,30 +118,30 @@ O modelo não deve inventar valores transacionais quando uma Tool falhar ou não
 ### Pergunta geral
 
 ```text
-Usuário -> Next.js -> NestJS -> OpenClaw -> DeepSeek/Ollama -> resposta
+Usuário -> Next.js -> NestJS/OrchestratorModule -> LlmModule -> DeepSeek/Ollama -> resposta
 ```
 
 ### Pergunta documental
 
 ```text
-Usuário -> Next.js -> NestJS -> OpenClaw
-OpenClaw -> PostgreSQL/pgvector -> fragmentos relevantes
-OpenClaw -> DeepSeek/Ollama com contexto -> resposta com referência à fonte
+Usuário -> Next.js -> NestJS/OrchestratorModule
+RagModule -> PostgreSQL/pgvector -> fragmentos relevantes
+LlmModule -> DeepSeek/Ollama com contexto -> resposta com referência à fonte
 ```
 
 ### Consulta transacional
 
 ```text
-Usuário -> Next.js -> NestJS -> OpenClaw
-OpenClaw -> Tool autorizada -> API Megauê -> dado atual
-OpenClaw -> DeepSeek/Ollama para compor a resposta -> usuário
+Usuário -> Next.js -> NestJS/OrchestratorModule
+ToolsModule -> Tool autorizada -> API Megauê -> dado atual
+LlmModule -> DeepSeek/Ollama para compor a resposta -> usuário
 ```
 
 ### Provedor alternativo futuro
 
 ```text
-OpenClaw -> Ollama/DeepSeek (principal no DEV)
-         `-> OpenAI API (possível alternativa ou fallback futuro)
+LlmModule -> Ollama/DeepSeek (principal no DEV)
+          `-> OpenAI API (possível alternativa ou fallback futuro)
 ```
 
 A adoção da OpenAI API e as condições de fallback deverão ser configuráveis. Antes do uso em produção, deverão ser definidos critérios de privacidade, custo, timeout, repetição, registro de falhas e quais dados podem ser enviados a um provedor externo.
@@ -150,18 +149,16 @@ A adoção da OpenAI API e as condições de fallback deverão ser configurávei
 ## Ordem de implementação do MVP
 
 1. Preparar e validar o ambiente Ubuntu Server.
-2. Instalar e validar o OpenClaw.
-3. Instalar e validar o Ollama.
-4. Baixar e validar o modelo DeepSeek adequado aos recursos do servidor.
-5. Integrar OpenClaw e Ollama.
-6. Executar um teste local de ponta a ponta da inferência, antes de adicionar as demais camadas.
-7. Criar a API NestJS e integrá-la ao OpenClaw.
-8. Criar a interface Next.js e integrá-la ao NestJS.
-9. Provisionar PostgreSQL com pgvector.
-10. Implementar o pipeline de ingestão documental.
-11. Implementar e avaliar o fluxo de RAG.
-12. Implementar as Tools e integrações com APIs da Megauê.
-13. Adicionar canais externos, como WhatsApp ou outros, somente após estabilizar o fluxo web e os controles de segurança.
+2. Instalar e validar o Ollama.
+3. Baixar e validar o modelo DeepSeek adequado aos recursos do servidor.
+4. Executar um teste local de ponta a ponta da inferência, antes de adicionar as demais camadas.
+5. Criar a API NestJS com módulos separados de orquestração e integração com o Ollama.
+6. Criar a interface Next.js e integrá-la ao NestJS.
+7. Provisionar PostgreSQL com pgvector.
+8. Implementar o pipeline de ingestão documental.
+9. Implementar e avaliar o fluxo de RAG.
+10. Implementar as Tools e integrações com APIs da Megauê.
+11. Adicionar canais externos, como WhatsApp ou outros, somente após estabilizar o fluxo web e os controles de segurança.
 
 Cada etapa deve ter um teste mínimo e critérios de aceite antes do avanço para a próxima. A composição final dos serviços deve ser declarada no Docker Compose, com configurações e segredos fornecidos por variáveis de ambiente e sem credenciais versionadas.
 

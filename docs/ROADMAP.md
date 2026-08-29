@@ -8,7 +8,7 @@ Disponibilizar, nesta máquina, um chatbot web capaz de:
 
 1. receber uma mensagem pela interface Next.js;
 2. processá-la pela API NestJS;
-3. orquestrar a resposta pelo OpenClaw;
+3. orquestrar a resposta por módulos internos do NestJS;
 4. usar um modelo DeepSeek local servido pelo Ollama;
 5. recuperar conhecimento documental com PostgreSQL e pgvector;
 6. consultar dados transacionais por Tools/APIs autorizadas;
@@ -64,11 +64,11 @@ Critérios de aceite:
 - Métricas e limites observados são registrados.
 - Há uma decisão explícita: modelo aceito, modelo menor necessário ou provedor alternativo necessário.
 
-## Fase 2 — Spike de orquestração OpenClaw + Ollama
+## Fase 2 — Decisão de orquestração
 
 Objetivo: remover o maior risco de integração antes de criar as aplicações.
 
-Status: spike concluído em 2026-08-29, mas integração não aprovada. O 7B expirou e o 1.5B não entregou resposta visível; a Fase 3 aguarda revisão do orquestrador/modelo. Evidências em `docs/PHASE2_RESULTS.md`.
+Status: concluída em 2026-08-29. O spike reprovou o OpenClaw para este MVP e a decisão foi implementar orquestração modular no NestJS. Evidências históricas em `docs/PHASE2_RESULTS.md`.
 
 Entregas:
 
@@ -83,7 +83,7 @@ Critérios de aceite:
 - Falhas retornam erro estruturado e não causam resposta inventada.
 - Configuração é reproduzível e não contém segredos.
 
-Ponto de decisão: se o OpenClaw não atender aos requisitos ou não tiver integração estável, revisar o orquestrador antes de avançar.
+Decisão tomada: o OpenClaw foi retirado da arquitetura vigente; seus artefatos de runtime foram removidos e o relatório foi preservado como histórico.
 
 ## Fase 3 — API NestJS e fluxo conversacional
 
@@ -92,9 +92,10 @@ Objetivo: oferecer um contrato de aplicação estável para qualquer cliente.
 Entregas:
 
 - Criar API NestJS com endpoint de saúde e endpoint de mensagens.
+- Criar `OrchestratorModule`, `LlmModule`, `RagModule` e `ToolsModule` com interfaces explícitas.
 - Validar payloads, padronizar respostas e erros e implementar timeouts.
 - Introduzir identificadores de sessão, conversa, mensagem e correlação.
-- Integrar a API ao OpenClaw pela rede interna do Compose.
+- Integrar o `LlmModule` ao Ollama pela rede interna do Compose.
 - Adicionar testes unitários, de integração e um teste ponta a ponta da API.
 
 Critérios de aceite:
@@ -118,7 +119,7 @@ Critérios de aceite:
 
 - Um usuário abre o site, envia uma mensagem e recebe a resposta local.
 - Falhas são compreensíveis e permitem nova tentativa.
-- O navegador não acessa diretamente Ollama, OpenClaw ou PostgreSQL.
+- O navegador não acessa diretamente Ollama ou PostgreSQL.
 
 Marco 1: chatbot local ponta a ponta sem RAG e sem Tools.
 
@@ -223,8 +224,8 @@ Critérios de aceite:
 ```text
 Base operacional
   -> IA local
-  -> OpenClaw + Ollama
-  -> API NestJS
+  -> Decisão de orquestração
+  -> API NestJS + orquestração modular + Ollama
   -> Interface Next.js
   -> Persistência
   -> RAG
@@ -238,7 +239,7 @@ Observabilidade e segurança começam na base e evoluem em todas as fases; não 
 ## Decisões necessárias ao longo do caminho
 
 - Modelo DeepSeek e quantização compatíveis com o hardware.
-- Contrato e viabilidade do OpenClaw.
+- Contratos internos entre orquestrador, LLM, RAG e Tools.
 - Método de embeddings e modelo de avaliação do RAG.
 - Primeira API transacional e escopo de dados permitido.
 - Forma de acesso ao piloto: local, VPN/túnel ou internet.

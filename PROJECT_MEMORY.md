@@ -17,26 +17,26 @@ Atualizado em: 2026-08-29 UTC.
 - Repositório GitHub: `lucviery/piloto-chatbot-ai`.
 - Branch principal: `main`.
 - A Fase 0 foi concluída com Compose mínimo, health check, `.env.example`, política de segredos e procedimentos operacionais validados.
-- Arquitetura planejada: Next.js, NestJS, OpenClaw, Ollama com DeepSeek e PostgreSQL com pgvector.
+- Arquitetura vigente: Next.js, NestJS com orquestração modular, Ollama com DeepSeek e PostgreSQL com pgvector; OpenClaw foi retirado do MVP.
 - Implantação inicial planejada com Docker Compose em Ubuntu Server.
 - O modelo local é o padrão no desenvolvimento; OpenAI API permanece apenas como alternativa ou fallback futuro configurável.
 - Kubernetes, K3s e canais externos estão fora do escopo inicial.
 - A máquina de trabalho atual foi definida como ambiente integrado de desenvolvimento, testes e hospedagem de toda a pilha do piloto.
 - Inventário da máquina registrado em `docs/ENVIRONMENT.md`: Ubuntu 26.04.1, 8 CPUs lógicas, 14 GiB de RAM, 84 GiB livres e somente GPU Intel integrada.
-- Node.js, Docker Engine 29.1.3 e Docker Compose 2.40.3 estão instalados; PostgreSQL e Ollama ainda não estão instalados.
+- Node.js, Docker Engine 29.1.3, Docker Compose 2.40.3 e Ollama em container estão disponíveis; PostgreSQL ainda não foi provisionado.
 - O usuário `ia-user` pertence ao grupo `docker`; o daemon e a execução de containers foram validados.
 - A Fase 1 foi concluída: Ollama 0.33.1 está saudável e restrito a `127.0.0.1:11434`; `deepseek-r1:7b` é o modelo padrão provisório.
-- O spike da Fase 2 foi concluído, mas OpenClaw + DeepSeek não foi aprovado: 7B expira e 1.5B termina sem resposta visível.
+- O spike da Fase 2 reprovou OpenClaw + DeepSeek e o OpenClaw foi retirado da arquitetura vigente e do Compose.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: comparados `deepseek-r1:1.5b` e `deepseek-r1:7b` pela API local do Ollama; o 7B foi aceito provisoriamente.
-- Verificações realizadas: três prompts por modelo; 7B com 5,34–6,10 tokens/s, carga de 5,64 s e 6,00 GiB observados; serviço saudável após reinício; modelos persistidos; API vinculada somente a `127.0.0.1:11434`.
-- Trabalho em andamento: decisão arquitetural após o spike da Fase 2.
-- Próximo passo exato: escolher entre testar outro modelo local instrucional compatível com Tools, simplificar/substituir o OpenClaw ou usar hardware/provedor alternativo; então repetir o teste antes da Fase 3.
-- Bloqueios conhecidos: OpenClaw 2026.7.1 com DeepSeek 7B excede 120 s em CPU; com 1.5B termina em 67,8 s, mas entrega `NO_REPLY`. A Fase 3 não deve começar enquanto não houver um fluxo aprovado.
+- Última ação concluída: OpenClaw retirado da arquitetura vigente, do Compose e das configurações executáveis; relatório do spike preservado como histórico.
+- Verificações realizadas: referências vigentes revisadas; Compose validado sem serviços ou volumes OpenClaw; volumes temporários e imagem local do spike removidos; Ollama mantido saudável.
+- Trabalho em andamento: nenhum.
+- Próximo passo exato: iniciar a Fase 3 criando a API NestJS com `OrchestratorModule` e `LlmModule`, integrados diretamente ao Ollama.
+- Bloqueios conhecidos: nenhum para iniciar a Fase 3. A URL e autorização do site para o RAG continuam pendentes, mas não bloqueiam o primeiro fluxo conversacional.
 
 ## Decisões vigentes
 
@@ -46,7 +46,8 @@ Atualizado em: 2026-08-29 UTC.
 - O código, os testes e a configuração atual têm precedência quando divergirem de uma anotação antiga desta memória.
 - Conhecimento documental será atendido pelo RAG; dados transacionais atuais ou sensíveis serão consultados em tempo real por Tools conectadas às APIs oficiais da Megauê.
 - Antes de instalar ou configurar componentes do MVP, o ambiente alvo deve ser inventariado de forma não destrutiva.
-- A máquina atual é o ambiente alvo do piloto e poderá executar Next.js, NestJS, OpenClaw, Ollama/DeepSeek, PostgreSQL/pgvector e serviços auxiliares.
+- A máquina atual é o ambiente alvo do piloto e poderá executar Next.js, NestJS com orquestração modular, Ollama/DeepSeek, PostgreSQL/pgvector e serviços auxiliares.
+- O OpenClaw não faz parte da arquitetura vigente; a orquestração será implementada em módulos desacoplados do NestJS.
 - O trabalho deve avançar com autonomia em ações reversíveis e de baixo risco; permissões elevadas devem ser mínimas, justificadas e restritas ao alvo necessário.
 - Containers e configurações locais são preferíveis a alterações globais quando atenderem ao requisito.
 - A máquina não possui GPU dedicada; o primeiro modelo local deverá ser pequeno e quantizado, com medição de desempenho antes de qualquer expansão.
@@ -60,20 +61,27 @@ Atualizado em: 2026-08-29 UTC.
 ## Hipóteses a validar
 
 - Capacidade do servidor alvo para executar o modelo DeepSeek escolhido com latência aceitável.
-- Modelo/orquestrador alternativo capaz de cumprir o contrato dentro da capacidade desta máquina.
+- Contratos e estratégia inicial de roteamento entre `OrchestratorModule`, `LlmModule`, `RagModule` e `ToolsModule`.
 - Modelo de embeddings, estratégia de fragmentação e critérios de qualidade do RAG.
 - URL do site inicial do RAG, autorização de indexação, escopo de páginas e política de atualização.
 - Requisitos de autenticação, autorização, auditoria e retenção de conversas.
 
 ## Próximos passos
 
-1. Inventariar o ambiente Ubuntu Server conforme `PROJECT_CONTEXT.md`.
-2. Registrar os resultados do inventário e os riscos encontrados.
-3. Selecionar versões compatíveis dos primeiros componentes.
-4. Instalar e validar OpenClaw, Ollama e um modelo DeepSeek adequado ao hardware.
-5. Executar um teste local de inferência ponta a ponta antes de criar Next.js, NestJS ou o RAG.
+1. Criar a API NestJS e os módulos internos de orquestração e LLM.
+2. Integrar diretamente o `LlmModule` ao Ollama pela rede interna.
+3. Validar sucesso, entrada inválida, timeout e indisponibilidade pela API NestJS.
+4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-29 — OpenClaw retirado da arquitetura vigente
+
+- Decidido que a orquestração do MVP será implementada por módulos internos e desacoplados no NestJS.
+- Removidos do Compose os serviços, volumes e configurações executáveis do OpenClaw.
+- Excluídos os dois volumes temporários do spike e a imagem Docker local `ghcr.io/openclaw/openclaw:2026.7.1-2`; os dados temporários não são recuperáveis.
+- Preservado `docs/PHASE2_RESULTS.md` como evidência histórica da avaliação.
+- A Fase 3 foi liberada para implementar o fluxo NestJS direto com Ollama.
 
 ### 2026-08-29 — Spike da Fase 2 concluído sem aprovação
 

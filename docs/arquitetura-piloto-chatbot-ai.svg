@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
   <title id="title">Arquitetura do piloto-chatbot-ai</title>
-  <desc id="desc">Fluxo do usuário pelo Next.js, NestJS e OpenClaw, com inteligência artificial local, RAG documental e APIs transacionais da Megauê.</desc>
+  <desc id="desc">Fluxo do usuário pelo Next.js e NestJS com orquestração modular, inteligência artificial local, RAG documental e APIs transacionais da Megauê.</desc>
   <defs>
     <style>
       text { font-family: Inter, Arial, sans-serif; fill: #172033; }
@@ -48,9 +48,9 @@
     <text x="855" y="263" text-anchor="middle" class="node-copy">API, sessões e segurança</text>
 
     <rect x="1060" y="195" width="350" height="102" class="node" fill="#fff7db" stroke="#d97706"/>
-    <text x="1235" y="234" text-anchor="middle" class="node-title">OpenClaw</text>
-    <text x="1235" y="260" text-anchor="middle" class="node-copy">Roteamento, contexto e Tools</text>
-    <text x="1235" y="281" text-anchor="middle" class="node-copy">Orquestração central de IA</text>
+    <text x="1235" y="234" text-anchor="middle" class="node-title">Orquestração NestJS</text>
+    <text x="1235" y="260" text-anchor="middle" class="node-copy">Orchestrator, LLM, RAG e Tools</text>
+    <text x="1235" y="281" text-anchor="middle" class="node-copy">Módulos internos desacoplados</text>
   </g>
 
   <path d="M340 246 H430" class="arrow"/>
@@ -83,8 +83,8 @@
 
   <g filter="url(#shadow)">
     <rect x="630" y="455" width="340" height="90" class="node" fill="#ffffff" stroke="#16a34a"/>
-    <text x="800" y="491" text-anchor="middle" class="node-title">Documentos</text>
-    <text x="800" y="518" text-anchor="middle" class="node-copy">Manuais, políticas e FAQs</text>
+    <text x="800" y="491" text-anchor="middle" class="node-title">Site autorizado</text>
+    <text x="800" y="518" text-anchor="middle" class="node-copy">Páginas, políticas e FAQs</text>
 
     <rect x="630" y="605" width="340" height="95" class="node" fill="#ffffff" stroke="#16a34a"/>
     <text x="800" y="642" text-anchor="middle" class="node-title">Pipeline de ingestão</text>
@@ -116,7 +116,7 @@
 
   <path d="M1295 595 V670" class="arrow"/>
 
-  <!-- Ligações do OpenClaw -->
+  <!-- Ligações da orquestração NestJS -->
   <path d="M1180 297 C1000 350 540 345 430 455" class="arrow"/>
   <text x="670" y="347" class="edge-label">Inferência local</text>
 

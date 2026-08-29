@@ -82,7 +82,7 @@ Erros de acesso ao socket indicam que a sessão atual ainda não recebeu o grupo
 ## Firewall e portas reservadas
 
 - Porta de entrada futura do site/proxy: `3000/tcp` apenas durante desenvolvimento local; a publicação definitiva será decidida na Fase 8.
-- Next.js, NestJS, OpenClaw, Ollama e PostgreSQL permanecerão internos à rede do Compose por padrão.
+- Next.js, NestJS, Ollama e PostgreSQL permanecerão internos à rede do Compose por padrão.
 - Nenhuma regra de firewall deve ser aberta nesta fase.
 
 Um administrador deve registrar o estado atual sem alterá-lo:

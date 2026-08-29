@@ -1,41 +1,6 @@
 name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}
 
 services:
-  openclaw-init:
-    image: ghcr.io/openclaw/openclaw:2026.7.1-2
-    profiles: [spike]
-    user: 0:0
-    entrypoint: [/bin/sh, -ec]
-    command: ["chown -R 1000:1000 /state/agents /state/workspace"]
-    volumes:
-      - openclaw-data:/state/agents
-      - openclaw-workspace:/state/workspace
-    security_opt:
-      - no-new-privileges:true
-    cap_drop: [ALL]
-    cap_add: [CHOWN, DAC_OVERRIDE, DAC_READ_SEARCH]
-    restart: "no"
-
-  openclaw-spike:
-    image: ghcr.io/openclaw/openclaw:2026.7.1-2
-    profiles: [spike]
-    depends_on:
-      ollama:
-        condition: service_healthy
-      openclaw-init:
-        condition: service_completed_successfully
-    environment:
-      OLLAMA_API_KEY: ollama-local
-    volumes:
-      - ./config/openclaw/openclaw.json:/home/node/.openclaw/openclaw.json:ro
-      - openclaw-data:/home/node/.openclaw/agents
-      - openclaw-workspace:/home/node/.openclaw/workspace
-      - ./config/openclaw/workspace/AGENTS.md:/home/node/.openclaw/workspace/AGENTS.md:ro
-    security_opt:
-      - no-new-privileges:true
-    cap_drop: [ALL]
-    restart: "no"
-
   ollama:
     image: ollama/ollama:0.33.1
     environment:
@@ -85,10 +50,6 @@ services:
     restart: unless-stopped
 
 volumes:
-  openclaw-data:
-    name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}-openclaw-data
-  openclaw-workspace:
-    name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}-openclaw-workspace
   ollama-data:
     name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}-ollama-data
   smoke-data:

@@ -2,7 +2,7 @@
 
 Chatbot self-hosted da Megauê, projetado para execução em Ubuntu Server.
 
-O MVP utiliza Next.js na interface, NestJS como API e OpenClaw para orquestrar o modelo local DeepSeek via Ollama, o RAG documental com PostgreSQL + pgvector e as integrações transacionais com as APIs da Megauê.
+O MVP utiliza Next.js na interface e NestJS como API e camada de orquestração modular do modelo local DeepSeek via Ollama, do RAG documental com PostgreSQL + pgvector e das integrações transacionais com as APIs da Megauê.
 
 ## Arquitetura
 
@@ -19,7 +19,7 @@ O RAG é reservado para conhecimento documental, como manuais, políticas e proc
 - [Roadmap executável e critérios de aceite do MVP](docs/ROADMAP.md)
 - [Operação, diagnóstico e limpeza segura da base Docker](docs/OPERATIONS.md)
 - [Resultados do benchmark da IA local](docs/PHASE1_RESULTS.md)
-- [Resultados do spike OpenClaw + Ollama](docs/PHASE2_RESULTS.md)
+- [Resultados históricos e decisão do spike OpenClaw + Ollama](docs/PHASE2_RESULTS.md)
 - [Imagem da arquitetura em SVG](docs/arquitetura-piloto-chatbot-ai.svg)
 
 ## Escopo inicial

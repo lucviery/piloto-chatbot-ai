@@ -2,6 +2,8 @@
 
 Data: 2026-08-29 UTC.
 
+Status histórico: após este spike, o OpenClaw foi retirado da arquitetura vigente do MVP. Os comandos abaixo documentam a avaliação realizada e não representam mais a configuração executável do repositório.
+
 ## Projeto e configuração avaliados
 
 - Projeto oficial: `openclaw/openclaw`, licença MIT.
@@ -33,10 +35,10 @@ docker compose --profile spike run --rm openclaw-spike \
 
 O spike está concluído, mas o OpenClaw não está aprovado para avançar à API NestJS neste hardware e com os modelos DeepSeek avaliados. A integração técnica existe e as falhas são explícitas, porém nenhum modelo satisfez simultaneamente qualidade, latência e entrega de resposta.
 
-Antes da Fase 3, é necessário escolher uma destas opções e executar um novo spike:
+As opções avaliadas ao final do spike foram:
 
 1. testar um modelo local pequeno, instrucional e compatível com Tools, mantendo o OpenClaw;
-2. simplificar ou substituir o orquestrador;
+2. simplificar ou substituir o orquestrador — opção escolhida, com orquestração modular no NestJS;
 3. disponibilizar hardware mais rápido ou um provedor externo autorizado.
 
-A configuração fica preservada no perfil Compose `spike` como evidência reproduzível, não como serviço aprovado do MVP.
+O relatório fica preservado como evidência. O perfil Compose, os volumes e as configurações do OpenClaw foram removidos após a decisão arquitetural.

@@ -151,7 +151,7 @@ Critérios de aceite:
 
 Objetivo: responder perguntas documentais com rastreabilidade.
 
-Fonte inicial definida: um site autorizado, cuja URL e permissão de indexação ainda serão confirmadas. Cada fragmento deverá preservar URL canônica, título, data de coleta e versão do conteúdo.
+Fonte inicial indicada: `https://dokuwiki.megaue.com.br`. A autorização de indexação, o escopo de páginas e a política de atualização ainda serão confirmados. Cada fragmento deverá preservar URL canônica, título, data de coleta e versão do conteúdo.
 
 Entregas:
 

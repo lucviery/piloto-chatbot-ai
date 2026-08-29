@@ -38,8 +38,8 @@ Atualizado em: 2026-08-29 UTC.
 - Última ação concluída: executada a validação operacional completa da Fase 5, incluindo reinício de PostgreSQL/API, comparação de contagens, retenção e restauração em banco temporário.
 - Verificações realizadas: tipagem e build aprovados; seis testes unitários e sete testes HTTP aprovados; migração idempotente aplicada; interação não sensível persistida; dados preservados após reinício; backup e restauração validados; readiness retornou PostgreSQL e Ollama `ok`; métricas responderam sem erros 5xx; site permaneceu HTTP 200.
 - Trabalho em andamento: nenhum.
-- Próximo passo exato: antes da Fase 6, confirmar com o responsável a URL do site inicial, autorização de indexação, escopo de páginas e política de atualização; então habilitar a extensão vector e implementar a ingestão idempotente.
-- Bloqueios conhecidos: a Fase 6 aguarda URL e autorização explícita do corpus documental inicial.
+- Próximo passo exato: confirmar autorização para indexar `https://dokuwiki.megaue.com.br`, escopo de páginas e política de atualização; então habilitar a extensão vector e implementar a ingestão idempotente.
+- Bloqueios conhecidos: a Fase 6 aguarda autorização explícita, escopo e política de atualização do DokuWiki indicado.
 
 ## Decisões vigentes
 
@@ -66,7 +66,7 @@ Atualizado em: 2026-08-29 UTC.
 - Capacidade do servidor alvo para executar o modelo DeepSeek escolhido com latência aceitável.
 - Contratos e estratégia inicial de roteamento entre `OrchestratorModule`, `LlmModule`, `RagModule` e `ToolsModule`.
 - Modelo de embeddings, estratégia de fragmentação e critérios de qualidade do RAG.
-- URL do site inicial do RAG, autorização de indexação, escopo de páginas e política de atualização.
+- Autorização de indexação, escopo de páginas e política de atualização de `https://dokuwiki.megaue.com.br`.
 - Requisitos de autenticação, autorização, auditoria e retenção de conversas.
 
 ## Próximos passos
@@ -77,6 +77,12 @@ Atualizado em: 2026-08-29 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-29 — DokuWiki indicado como corpus inicial do RAG
+
+- A URL indicada foi `https://dokuwiki.megaue.com.br` e respondeu HTTP 200.
+- O `robots.txt` contém explicações sobre sinais de uso, mas não declara sinal explícito nem regras `User-agent`/`Disallow`; isso não substitui autorização do responsável.
+- Coleta e armazenamento não foram iniciados; continuam pendentes autorização explícita, escopo e política de atualização.
 
 ### 2026-08-29 — Fase 5 concluída
 
@@ -161,7 +167,7 @@ Atualizado em: 2026-08-29 UTC.
 
 - O primeiro corpus documental será coletado de um site autorizado.
 - A ingestão deverá ser idempotente e preservar URL canônica, título, data de coleta, versão e rastreabilidade por fragmento.
-- A URL, a autorização de indexação e o escopo de páginas permanecem pendentes.
+- A URL foi definida como `https://dokuwiki.megaue.com.br`; autorização, escopo de páginas e política de atualização permanecem pendentes.
 
 ### 2026-08-29 — Fase 1 concluída
 

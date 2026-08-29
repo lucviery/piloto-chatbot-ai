@@ -1,4 +1,5 @@
-import { Body, Controller, Headers, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
+import { RequestWithContext } from '../common/request-context.middleware';
 import { SendMessageDto } from './dto/send-message.dto';
 import { MessageResponse, OrchestratorService } from './orchestrator.service';
 
@@ -9,9 +10,8 @@ export class OrchestratorController {
   @Post()
   send(
     @Body() input: SendMessageDto,
-    @Headers('x-correlation-id') correlationId?: string,
+    @Req() request: RequestWithContext,
   ): Promise<MessageResponse> {
-    return this.orchestrator.respond(input.message, correlationId);
+    return this.orchestrator.respond(input, request.correlationId);
   }
 }
-

@@ -51,4 +51,4 @@ curl -X POST http://127.0.0.1:3000/messages \
   -d '{"message":"Responda apenas: ok"}'
 ```
 
-O endpoint de mensagens aceita texto de até 4.000 caracteres. Nesta etapa, todas as mensagens seguem pela rota `direct` para o Ollama. Os contratos de RAG e Tools serão adicionados nas fases correspondentes.
+O endpoint de mensagens aceita texto de até 4.000 caracteres e identificadores UUID opcionais `sessionId` e `conversationId`; quando ausentes, a API os cria. A resposta inclui esses identificadores, o ID da mensagem e o `correlationId`. Nesta etapa, todas as mensagens seguem pela rota `direct` para o Ollama. Os contratos de RAG e Tools já estão isolados em módulos próprios, mas seus provedores serão adicionados somente nas fases correspondentes.

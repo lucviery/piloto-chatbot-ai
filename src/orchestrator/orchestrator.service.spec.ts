@@ -9,7 +9,7 @@ describe('OrchestratorService', () => {
       providers: [OrchestratorService, { provide: LlmService, useValue: { generate } }],
     }).compile();
 
-    const result = await module.get(OrchestratorService).respond('Oi', 'corr-1');
+    const result = await module.get(OrchestratorService).respond({ message: 'Oi' }, 'corr-1');
 
     expect(generate).toHaveBeenCalledWith({ message: 'Oi' });
     expect(result).toMatchObject({
@@ -19,6 +19,7 @@ describe('OrchestratorService', () => {
       model: 'test-model',
     });
     expect(result.id).toBeTruthy();
+    expect(result.sessionId).toBeTruthy();
+    expect(result.conversationId).toBeTruthy();
   });
 });
-

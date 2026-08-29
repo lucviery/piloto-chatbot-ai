@@ -16,6 +16,7 @@ O RAG é reservado para conhecimento documental, como manuais, políticas e proc
 - [Memória, decisões, aprendizados e continuidade do projeto](PROJECT_MEMORY.md)
 - [Instruções persistentes para agentes e futuras sessões](AGENTS.md)
 - [Inventário da máquina de desenvolvimento, testes e hospedagem](docs/ENVIRONMENT.md)
+- [Roadmap executável e critérios de aceite do MVP](docs/ROADMAP.md)
 - [Imagem da arquitetura em SVG](docs/arquitetura-piloto-chatbot-ai.svg)
 
 ## Escopo inicial

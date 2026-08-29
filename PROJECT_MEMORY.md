@@ -29,10 +29,10 @@ Atualizado em: 2026-08-29 UTC.
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: definido que a máquina atual hospedará e testará toda a pilha do piloto, com autonomia operacional e permissões mínimas.
-- Verificações realizadas: sistema, CPU, memória, armazenamento, GPU, ferramentas, processos, portas e pacotes Docker disponíveis foram inspecionados sem alterações.
+- Última ação concluída: criado o roadmap do MVP em `docs/ROADMAP.md`, com dez fases, dependências, marcos e critérios de aceite.
+- Verificações realizadas: roadmap comparado à arquitetura, ao inventário da máquina e à ordem de implementação definida no contexto.
 - Trabalho em andamento: nenhum.
-- Próximo passo exato: obter autorização administrativa mínima para instalar Docker Engine e Docker Compose pelo repositório do Ubuntu, então validar a instalação antes de adicionar serviços.
+- Próximo passo exato: iniciar a Fase 0 obtendo autorização administrativa mínima para consultar o firewall e instalar Docker Engine e Docker Compose.
 - Bloqueios conhecidos: `sudo` exige autenticação interativa; o estado do UFW não pôde ser consultado sem essa autenticação.
 
 ## Decisões vigentes
@@ -70,6 +70,13 @@ Atualizado em: 2026-08-29 UTC.
 5. Executar um teste local de inferência ponta a ponta antes de criar Next.js, NestJS ou o RAG.
 
 ## Histórico
+
+### 2026-08-29 — Roadmap executável do MVP definido
+
+- Organizado o projeto em fases da base operacional à avaliação final do piloto.
+- Definidos critérios de aceite para impedir avanço sem validação da etapa anterior.
+- Priorizada a prova de capacidade do modelo local e do OpenClaw antes da criação das aplicações web e API.
+- Segurança e observabilidade foram definidas como responsabilidades contínuas.
 
 ### 2026-08-29 — Máquina atual definida como ambiente integrado do piloto
 

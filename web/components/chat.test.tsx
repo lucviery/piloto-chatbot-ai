@@ -19,6 +19,7 @@ describe('Chat', () => {
         correlationId: 'correlation-1',
         content: 'Olá! Como posso ajudar?',
         model: 'deepseek-test',
+        sources: [{ title: 'Manual', url: 'https://dokuwiki.megaue.com.br/manual' }],
       }),
     }));
     const user = userEvent.setup();
@@ -30,6 +31,10 @@ describe('Chat', () => {
     expect(screen.getByText('Olá')).toBeInTheDocument();
     expect(await screen.findByText('Olá! Como posso ajudar?')).toBeInTheDocument();
     expect(screen.getByText('deepseek-test')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Manual' })).toHaveAttribute(
+      'href',
+      'https://dokuwiki.megaue.com.br/manual',
+    );
   });
 
   it('shows an understandable error and retries', async () => {

@@ -1,6 +1,40 @@
 name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}
 
 services:
+  rag-scheduler:
+    build:
+      context: .
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        while true; do
+          sleep "$${RAG_INTERVAL_SECONDS}"
+          npm run rag:ingest
+        done
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-embeddinggemma:latest}
+      RAG_BASE_URL: ${RAG_BASE_URL:-https://dokuwiki.megaue.com.br}
+      RAG_INTERVAL_SECONDS: ${RAG_INTERVAL_SECONDS:-86400}
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB:-piloto_chatbot}
+      PGUSER: ${POSTGRES_USER:-piloto_chatbot}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no arquivo .env}
+      PGPOOL_MAX: 2
+    depends_on:
+      ollama:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
   web:
     build:
       context: ./web

@@ -122,13 +122,7 @@ sudo docker compose exec api npm run rag:ingest
 sudo docker compose exec api npm run rag:evaluate
 ```
 
-A avaliação exige ao menos 80% de acerto no documento esperado. Para atualização diária, registre no agendador do servidor, em horário de baixa utilização:
-
-```cron
-15 3 * * * cd /home/ia-user/piloto-chatbot-ai && docker compose exec -T api npm run rag:ingest >> /var/log/piloto-chatbot-rag.log 2>&1
-```
-
-O agendamento deve ser instalado apenas pelo operador autorizado e revisado na Fase 8 junto às permissões e à rotação dos logs.
+A avaliação exige ao menos 80% de acerto no documento esperado. O serviço `rag-scheduler` executa nova ingestão a cada 86.400 segundos por padrão; o intervalo pode ser alterado por `RAG_INTERVAL_SECONDS`. Falhas aparecem nos logs do serviço e o container reinicia sem perder o índice atual.
 
 Para executar toda a validação operacional da Fase 6, incluindo download do modelo, rebuild, ingestão, avaliação e uma resposta real com fontes:
 

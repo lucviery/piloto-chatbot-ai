@@ -27,6 +27,8 @@ Disponibilizar, nesta máquina, um chatbot web capaz de:
 
 Objetivo: preparar uma fundação reproduzível sem expor serviços.
 
+Status: concluída em 2026-08-29. Evidências e comandos estão em `docs/OPERATIONS.md` e `PROJECT_MEMORY.md`.
+
 Entregas:
 
 - Confirmar acesso administrativo e estado do firewall.

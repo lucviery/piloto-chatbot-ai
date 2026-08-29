@@ -33,7 +33,7 @@ Esta máquina é o ambiente integrado de desenvolvimento, testes e hospedagem do
 - Porta TCP 22 em escuta em IPv4 e IPv6 para SSH.
 - Nenhuma porta da aplicação, banco ou Ollama estava em escuta.
 - UFW: inativo, conforme verificação administrativa informada em 2026-08-29.
-- O socket do Docker existe, mas o usuário `ia-user` ainda não pertence ao grupo `docker`; por isso a validação do daemon e dos containers permanece pendente.
+- O usuário `ia-user` pertence ao grupo `docker`. O daemon respondeu com Engine 29.1.3 e driver `overlayfs`.
 
 ## Pacotes instalados pelo Ubuntu
 
@@ -49,9 +49,8 @@ As versões devem ser confirmadas novamente imediatamente antes da instalação,
 - Docker Compose é o caminho preferencial para isolar e reproduzir a pilha.
 - A exposição externa do site exige uma decisão posterior sobre domínio, TLS, proxy reverso e regras de firewall. Nenhuma porta nova deve ser aberta antes dessa definição.
 
-## Pendências antes da instalação
+## Pendências para as próximas fases
 
-1. Um administrador deve adicionar `ia-user` ao grupo `docker` e renovar a sessão.
-2. Definir o modelo DeepSeek inicial compatível com CPU e 14 GiB de RAM.
-3. Definir portas internas da composição, mantendo banco, Ollama e serviços internos sem exposição pública.
-4. Confirmar como o site será acessado inicialmente: somente rede local ou internet.
+1. Definir o modelo DeepSeek inicial compatível com CPU e 14 GiB de RAM.
+2. Definir portas internas dos novos serviços, mantendo banco, Ollama e serviços internos sem exposição pública.
+3. Confirmar como o site será acessado inicialmente: somente rede local ou internet.

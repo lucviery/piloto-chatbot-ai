@@ -7,9 +7,11 @@ services:
       - /bin/sh
       - -ec
       - |
-        mkdir -p /data/www
-        printf 'piloto-chatbot-ai: ok\n' > /data/www/index.html
-        exec httpd -f -p ${SMOKE_INTERNAL_PORT:-8080} -h /data/www
+        printf 'piloto-chatbot-ai: ok\n' > /data/status
+        while true; do
+          printf 'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\npiloto-chatbot-ai: ok\n' |
+            nc -l -p "$${SMOKE_INTERNAL_PORT}"
+        done
     environment:
       SMOKE_INTERNAL_PORT: ${SMOKE_INTERNAL_PORT:-8080}
     healthcheck:

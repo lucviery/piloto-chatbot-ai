@@ -16,7 +16,7 @@ Atualizado em: 2026-08-29 UTC.
 
 - Repositório GitHub: `lucviery/piloto-chatbot-ai`.
 - Branch principal: `main`.
-- A base versionável da Fase 0 foi iniciada com Compose mínimo, health check, `.env.example`, política de segredos e procedimentos operacionais.
+- A Fase 0 foi concluída com Compose mínimo, health check, `.env.example`, política de segredos e procedimentos operacionais validados.
 - Arquitetura planejada: Next.js, NestJS, OpenClaw, Ollama com DeepSeek e PostgreSQL com pgvector.
 - Implantação inicial planejada com Docker Compose em Ubuntu Server.
 - O modelo local é o padrão no desenvolvimento; OpenAI API permanece apenas como alternativa ou fallback futuro configurável.
@@ -24,17 +24,17 @@ Atualizado em: 2026-08-29 UTC.
 - A máquina de trabalho atual foi definida como ambiente integrado de desenvolvimento, testes e hospedagem de toda a pilha do piloto.
 - Inventário da máquina registrado em `docs/ENVIRONMENT.md`: Ubuntu 26.04.1, 8 CPUs lógicas, 14 GiB de RAM, 84 GiB livres e somente GPU Intel integrada.
 - Node.js, Docker Engine 29.1.3 e Docker Compose 2.40.3 estão instalados; PostgreSQL e Ollama ainda não estão instalados.
-- O usuário `ia-user` ainda não tem acesso ao socket Docker. A validação de containers depende de um administrador adicioná-lo ao grupo `docker` e da renovação da sessão.
+- O usuário `ia-user` pertence ao grupo `docker`; o daemon e a execução de containers foram validados.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: criada a base versionável da Fase 0 (`compose.yaml`, `.env.example`, `.gitignore` e `docs/OPERATIONS.md`) e atualizado o inventário com o Docker já encontrado na máquina.
-- Verificações realizadas: `docker --version` retornou 29.1.3, `docker compose version` retornou 2.40.3, `docker compose config --quiet` passou e `git diff --check` passou. `docker info` e `docker run --rm hello-world` foram tentados e falharam por falta de permissão no socket.
-- Trabalho em andamento: Fase 0 parcialmente concluída; faltam as validações administrativas e de runtime.
-- Próximo passo exato: um administrador executar `sudo usermod -aG docker ia-user`; depois renovar a sessão e executar os testes descritos em `docs/OPERATIONS.md`.
-- Bloqueios conhecidos: o usuário atual não pertence ao grupo `docker`; o runtime do Compose não pôde ser validado. O UFW está inativo, portanto não oferece uma camada adicional de filtragem caso portas sejam publicadas no futuro.
+- Última ação concluída: Fase 0 validada integralmente, incluindo acesso ao daemon, `hello-world`, health check, reinício, persistência do volume, ausência de portas publicadas e encerramento do Compose.
+- Verificações realizadas: Docker Engine 29.1.3 com `overlayfs`; Compose 2.40.3; `docker run --rm hello-world`; `docker compose config --quiet`; `docker compose up -d --wait`; estado `healthy`; reinício seguido de nova saúde; ausência de endereço em `docker compose port smoke 8080`; `docker compose down`; `git diff --check`.
+- Trabalho em andamento: nenhum.
+- Próximo passo exato: iniciar a Fase 1 selecionando e validando um modelo DeepSeek pequeno e quantizado adequado à CPU e aos 14 GiB de RAM.
+- Bloqueios conhecidos: nenhum para iniciar a Fase 1. O UFW está inativo, portanto não oferece uma camada adicional de filtragem caso portas sejam publicadas no futuro.
 
 ## Decisões vigentes
 
@@ -84,6 +84,14 @@ Atualizado em: 2026-08-29 UTC.
 - O UFW está inativo.
 - Nenhuma ativação ou regra foi aplicada nesta fase; o Compose mínimo continua sem portas publicadas.
 - A validação de runtime do Docker permanece pendente por falta de acesso do usuário ao socket.
+
+### 2026-08-29 — Fase 0 concluída
+
+- Confirmada a associação de `ia-user` ao grupo `docker` e validado o daemon com Engine 29.1.3 e driver `overlayfs`.
+- `hello-world` executou corretamente.
+- O primeiro teste detectou que a imagem Alpine não inclui o applet `httpd`; o smoke service foi corrigido para usar o `nc` disponível na própria imagem.
+- O Compose corrigido ficou saudável, permaneceu saudável após reinício, preservou o volume, não publicou portas e encerrou sem erros.
+- A Fase 0 atende aos critérios de aceite e a Fase 1 está liberada.
 
 ### 2026-08-29 — Roadmap executável do MVP definido
 

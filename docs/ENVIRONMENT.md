@@ -32,7 +32,7 @@ Esta máquina é o ambiente integrado de desenvolvimento, testes e hospedagem do
 - Endereço observado na rede local: `192.168.0.80`.
 - Porta TCP 22 em escuta em IPv4 e IPv6 para SSH.
 - Nenhuma porta da aplicação, banco ou Ollama estava em escuta.
-- O estado do UFW não pôde ser consultado sem autenticação administrativa e permanece pendente.
+- UFW: inativo, conforme verificação administrativa informada em 2026-08-29.
 - O socket do Docker existe, mas o usuário `ia-user` ainda não pertence ao grupo `docker`; por isso a validação do daemon e dos containers permanece pendente.
 
 ## Pacotes instalados pelo Ubuntu
@@ -51,7 +51,7 @@ As versões devem ser confirmadas novamente imediatamente antes da instalação,
 
 ## Pendências antes da instalação
 
-1. Um administrador deve adicionar `ia-user` ao grupo `docker`, renovar a sessão e consultar o firewall.
+1. Um administrador deve adicionar `ia-user` ao grupo `docker` e renovar a sessão.
 2. Definir o modelo DeepSeek inicial compatível com CPU e 14 GiB de RAM.
 3. Definir portas internas da composição, mantendo banco, Ollama e serviços internos sem exposição pública.
 4. Confirmar como o site será acessado inicialmente: somente rede local ou internet.

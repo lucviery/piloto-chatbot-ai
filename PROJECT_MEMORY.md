@@ -33,8 +33,8 @@ Atualizado em: 2026-08-29 UTC.
 - Última ação concluída: criada a base versionável da Fase 0 (`compose.yaml`, `.env.example`, `.gitignore` e `docs/OPERATIONS.md`) e atualizado o inventário com o Docker já encontrado na máquina.
 - Verificações realizadas: `docker --version` retornou 29.1.3, `docker compose version` retornou 2.40.3, `docker compose config --quiet` passou e `git diff --check` passou. `docker info` e `docker run --rm hello-world` foram tentados e falharam por falta de permissão no socket.
 - Trabalho em andamento: Fase 0 parcialmente concluída; faltam as validações administrativas e de runtime.
-- Próximo passo exato: um administrador executar `sudo usermod -aG docker ia-user` e `sudo ufw status verbose`; depois renovar a sessão e executar os testes descritos em `docs/OPERATIONS.md`.
-- Bloqueios conhecidos: `sudo` exige autenticação interativa; o usuário atual não pertence ao grupo `docker`; o estado do UFW e o runtime do Compose não puderam ser validados.
+- Próximo passo exato: um administrador executar `sudo usermod -aG docker ia-user`; depois renovar a sessão e executar os testes descritos em `docs/OPERATIONS.md`.
+- Bloqueios conhecidos: o usuário atual não pertence ao grupo `docker`; o runtime do Compose não pôde ser validado. O UFW está inativo, portanto não oferece uma camada adicional de filtragem caso portas sejam publicadas no futuro.
 
 ## Decisões vigentes
 
@@ -77,7 +77,13 @@ Atualizado em: 2026-08-29 UTC.
 - Confirmada a instalação prévia do Docker Engine 29.1.3 e Docker Compose 2.40.3, corrigindo o inventário anterior.
 - Criado Compose mínimo sem portas publicadas, com health check, volume nomeado, sistema de arquivos somente leitura e `no-new-privileges`.
 - Documentados configuração, diagnóstico, encerramento e limpeza segura.
-- A validação estática passou; a validação do daemon, `hello-world`, subida do Compose e UFW permanece bloqueada pela autenticação administrativa interativa.
+- A validação estática passou; naquele momento, a validação do daemon, `hello-world`, subida do Compose e UFW ficou bloqueada pela autenticação administrativa interativa.
+
+### 2026-08-29 — Estado do UFW confirmado
+
+- O UFW está inativo.
+- Nenhuma ativação ou regra foi aplicada nesta fase; o Compose mínimo continua sem portas publicadas.
+- A validação de runtime do Docker permanece pendente por falta de acesso do usuário ao socket.
 
 ### 2026-08-29 — Roadmap executável do MVP definido
 

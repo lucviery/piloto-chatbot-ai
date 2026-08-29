@@ -9,6 +9,7 @@ import request = require('supertest');
 import { AppModule } from '../src/app.module';
 import { LlmService } from '../src/llm/llm.service';
 import { ConversationRepository } from '../src/database/conversation.repository';
+import { RagService } from '../src/rag/rag.service';
 
 describe('API (e2e)', () => {
   let app: INestApplication;
@@ -20,6 +21,8 @@ describe('API (e2e)', () => {
       .useValue({ generate })
       .overrideProvider(ConversationRepository)
       .useValue({ saveInteraction: jest.fn().mockResolvedValue(undefined) })
+      .overrideProvider(RagService)
+      .useValue({ retrieve: jest.fn().mockResolvedValue({ context: '', sources: [] }) })
       .compile();
 
     app = module.createNestApplication();

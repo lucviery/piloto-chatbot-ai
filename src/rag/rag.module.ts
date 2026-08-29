@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
+import { EmbeddingService } from './embedding.service';
+import { RagService } from './rag.service';
 
-// O provedor será registrado quando a persistência e o RAG forem implementados.
-@Module({})
+@Module({ providers: [EmbeddingService, RagService], exports: [RagService] })
 export class RagModule {}
-

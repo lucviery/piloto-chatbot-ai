@@ -6,9 +6,7 @@ describe('MigrationService', () => {
     const client = { query: jest.fn().mockResolvedValue({}) };
     const database = {
       configured: true,
-      query: jest.fn()
-        .mockResolvedValueOnce({ rowCount: 0 })
-        .mockResolvedValueOnce({ rowCount: 0 }),
+      query: jest.fn().mockResolvedValue({ rowCount: 0 }),
       transaction: jest.fn(async (operation) => operation(client)),
     } as unknown as DatabaseService;
 
@@ -24,9 +22,9 @@ describe('MigrationService', () => {
   it('does not reapply an existing migration', async () => {
     const database = {
       configured: true,
-      query: jest.fn()
-        .mockResolvedValueOnce({ rowCount: 0 })
-        .mockResolvedValueOnce({ rowCount: 1 }),
+      query: jest.fn().mockImplementation((sql: string) =>
+        Promise.resolve({ rowCount: sql.includes('SELECT 1 FROM schema_migrations') ? 1 : 0 }),
+      ),
       transaction: jest.fn(),
     } as unknown as DatabaseService;
 
@@ -35,4 +33,3 @@ describe('MigrationService', () => {
     expect(database.transaction).not.toHaveBeenCalled();
   });
 });
-

@@ -9,6 +9,7 @@ interface ApiResponse {
   correlationId: string;
   content: string;
   model: string;
+  sources?: { title: string; url: string }[];
 }
 
 interface ChatMessage {
@@ -16,6 +17,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   model?: string;
+  sources?: { title: string; url: string }[];
 }
 
 export function Chat() {
@@ -59,7 +61,7 @@ export function Chat() {
       conversationId.current = body.conversationId;
       setMessages((current) => [
         ...current,
-        { id: body.id, role: 'assistant', content: body.content, model: body.model },
+        { id: body.id, role: 'assistant', content: body.content, model: body.model, sources: body.sources },
       ]);
     } catch (requestError: unknown) {
       setError(
@@ -102,6 +104,15 @@ export function Chat() {
               </span>
               <p>{message.content}</p>
               {message.model ? <small>{message.model}</small> : null}
+              {message.sources?.length ? (
+                <ul className="sources" aria-label="Fontes da resposta">
+                  {message.sources.map((source) => (
+                    <li key={source.url}>
+                      <a href={source.url} target="_blank" rel="noreferrer">{source.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </article>
           ))
         )}

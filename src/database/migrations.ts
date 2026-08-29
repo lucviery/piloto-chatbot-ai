@@ -38,5 +38,36 @@ export const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS messages_created_at_idx ON messages(created_at);
     `,
   },
-];
+  {
+    version: '002_rag_documents_and_vectors',
+    sql: `
+      CREATE EXTENSION IF NOT EXISTS vector;
 
+      CREATE TABLE IF NOT EXISTS rag_documents (
+        id uuid PRIMARY KEY,
+        canonical_url text NOT NULL,
+        title text NOT NULL,
+        content_hash varchar(64) NOT NULL,
+        collected_at timestamptz NOT NULL DEFAULT now(),
+        active boolean NOT NULL DEFAULT true,
+        UNIQUE (canonical_url, content_hash)
+      );
+
+      CREATE UNIQUE INDEX IF NOT EXISTS rag_one_active_version_per_url
+        ON rag_documents(canonical_url) WHERE active;
+
+      CREATE TABLE IF NOT EXISTS rag_chunks (
+        id uuid PRIMARY KEY,
+        document_id uuid NOT NULL REFERENCES rag_documents(id) ON DELETE CASCADE,
+        chunk_index integer NOT NULL CHECK (chunk_index >= 0),
+        content text NOT NULL,
+        embedding vector(768) NOT NULL,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        UNIQUE (document_id, chunk_index)
+      );
+
+      CREATE INDEX IF NOT EXISTS rag_chunks_embedding_hnsw
+        ON rag_chunks USING hnsw (embedding vector_cosine_ops);
+    `,
+  },
+];

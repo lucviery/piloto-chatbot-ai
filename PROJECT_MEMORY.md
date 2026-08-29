@@ -38,8 +38,8 @@ Atualizado em: 2026-08-29 UTC.
 - Última ação concluída: executada a validação operacional completa da Fase 5, incluindo reinício de PostgreSQL/API, comparação de contagens, retenção e restauração em banco temporário.
 - Verificações realizadas: tipagem e build aprovados; seis testes unitários e sete testes HTTP aprovados; migração idempotente aplicada; interação não sensível persistida; dados preservados após reinício; backup e restauração validados; readiness retornou PostgreSQL e Ollama `ok`; métricas responderam sem erros 5xx; site permaneceu HTTP 200.
 - Trabalho em andamento: nenhum.
-- Próximo passo exato: confirmar autorização para indexar `https://dokuwiki.megaue.com.br`, escopo de páginas e política de atualização; então habilitar a extensão vector e implementar a ingestão idempotente.
-- Bloqueios conhecidos: a Fase 6 aguarda autorização explícita, escopo e política de atualização do DokuWiki indicado.
+- Próximo passo exato: disponibilizar `embeddinggemma:latest`, reconstruir API/web, executar ingestão e avaliação do DokuWiki e validar uma resposta com fontes no navegador.
+- Bloqueios conhecidos: nenhum de definição; a validação operacional exige comandos Docker com autenticação administrativa interativa.
 
 ## Decisões vigentes
 
@@ -77,6 +77,12 @@ Atualizado em: 2026-08-29 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-29 — Escopo do corpus DokuWiki autorizado
+
+- Autorizada a indexação de todas as páginas públicas acessíveis em `https://dokuwiki.megaue.com.br`.
+- Definida atualização diária; ações técnicas, busca, histórico, mídia e administração ficam fora do crawler.
+- Implementados versionamento documental, fragmentos vetoriais, ingestão idempotente, recuperação com limiar, fontes na API/interface e avaliação inicial com meta de 80%.
 
 ### 2026-08-29 — DokuWiki indicado como corpus inicial do RAG
 

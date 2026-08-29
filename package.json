@@ -10,7 +10,9 @@
     "test": "jest --runInBand",
     "test:e2e": "jest --config test/jest-e2e.json --runInBand",
     "typecheck": "tsc --noEmit",
-    "retention:cleanup": "node dist/database/cleanup-retention.js"
+    "retention:cleanup": "node dist/database/cleanup-retention.js",
+    "rag:ingest": "node dist/rag/ingest.js",
+    "rag:evaluate": "node dist/rag/evaluate.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
@@ -18,6 +20,7 @@
     "@nestjs/platform-express": "^11.1.6",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "cheerio": "1.2.0",
     "pg": "8.23.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"

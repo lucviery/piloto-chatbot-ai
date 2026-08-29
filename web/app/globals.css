@@ -90,6 +90,8 @@ h1 {
 .message.user p { color: white; background: var(--green); border-bottom-right-radius: .3rem; }
 .message.assistant p { background: #ece8de; border-bottom-left-radius: .3rem; }
 .message small { display: block; margin: .35rem .6rem 0; color: var(--muted); font-size: .65rem; }
+.sources { margin: .65rem .6rem 0; padding-left: 1.1rem; font-size: .75rem; }
+.sources a { color: var(--green); text-underline-offset: .18rem; }
 .thinking { display: flex; gap: .28rem; width: fit-content; padding: 1rem 1.2rem; background: #ece8de; border-radius: 1rem; }
 .thinking span:not(.sr-only) { width: .4rem; height: .4rem; border-radius: 50%; background: var(--muted); animation: bounce 1.2s infinite ease-in-out; }
 .thinking span:nth-child(2) { animation-delay: .15s; }
@@ -122,4 +124,3 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .thinking span:not(.sr-only) { animation: none; }
 }
-

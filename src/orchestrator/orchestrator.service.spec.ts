@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { LlmService } from '../llm/llm.service';
 import { ConversationRepository } from '../database/conversation.repository';
+import { RagService } from '../rag/rag.service';
 import { OrchestratorService } from './orchestrator.service';
 
 describe('OrchestratorService', () => {
@@ -12,6 +13,7 @@ describe('OrchestratorService', () => {
         OrchestratorService,
         { provide: LlmService, useValue: { generate } },
         { provide: ConversationRepository, useValue: { saveInteraction } },
+        { provide: RagService, useValue: { retrieve: jest.fn().mockResolvedValue({ context: '', sources: [] }) } },
       ],
     }).compile();
 

@@ -109,6 +109,33 @@ sudo sh scripts/validate-phase5.sh
 
 O script reinicia apenas `postgres` e `api`, compara as contagens antes e depois, valida um backup em `piloto_restore_validation`, executa a retenção e remove o arquivo temporário de teste. Ele não remove volumes.
 
+## RAG: ingestão diária e avaliação
+
+O corpus autorizado é `https://dokuwiki.megaue.com.br`, limitado às páginas públicas listadas no índice. A ingestão usa exportação XHTML, versiona por hash SHA-256 e preserva URL, título e data de coleta.
+
+Após garantir que `embeddinggemma:latest` está disponível no Ollama:
+
+```bash
+docker compose exec ollama ollama pull embeddinggemma:latest
+sudo docker compose up -d --build api web
+sudo docker compose exec api npm run rag:ingest
+sudo docker compose exec api npm run rag:evaluate
+```
+
+A avaliação exige ao menos 80% de acerto no documento esperado. Para atualização diária, registre no agendador do servidor, em horário de baixa utilização:
+
+```cron
+15 3 * * * cd /home/ia-user/piloto-chatbot-ai && docker compose exec -T api npm run rag:ingest >> /var/log/piloto-chatbot-rag.log 2>&1
+```
+
+O agendamento deve ser instalado apenas pelo operador autorizado e revisado na Fase 8 junto às permissões e à rotação dos logs.
+
+Para executar toda a validação operacional da Fase 6, incluindo download do modelo, rebuild, ingestão, avaliação e uma resposta real com fontes:
+
+```bash
+sudo sh scripts/validate-phase6.sh
+```
+
 Erros de acesso ao socket indicam que a sessão atual ainda não recebeu o grupo `docker`. Erros de download exigem verificar DNS, rota de saída e acesso ao registro de imagens. Falha no health check deve ser investigada pelos logs e pelo campo `State.Health` do `docker inspect`.
 
 ## Firewall e portas reservadas

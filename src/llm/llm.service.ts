@@ -15,7 +15,7 @@ export class LlmService implements LlmProvider {
   private readonly baseUrl = process.env.OLLAMA_BASE_URL ?? 'http://ollama:11434';
   private readonly model = process.env.OLLAMA_MODEL ?? 'deepseek-r1:7b';
   private readonly timeoutMs = Number(process.env.OLLAMA_TIMEOUT_MS ?? 180000);
-  private readonly maxOutputTokens = Number(process.env.OLLAMA_NUM_PREDICT ?? 512);
+  private readonly maxOutputTokens = Number(process.env.OLLAMA_NUM_PREDICT ?? 768);
 
   async generate(request: GenerateRequest): Promise<GenerateResult> {
     try {
@@ -25,6 +25,7 @@ export class LlmService implements LlmProvider {
         body: JSON.stringify({
           model: this.model,
           stream: false,
+          think: false,
           messages: [{ role: 'user', content: request.message }],
           options: { num_predict: this.maxOutputTokens },
         }),

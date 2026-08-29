@@ -25,16 +25,17 @@ Atualizado em: 2026-08-29 UTC.
 - Inventário da máquina registrado em `docs/ENVIRONMENT.md`: Ubuntu 26.04.1, 8 CPUs lógicas, 14 GiB de RAM, 84 GiB livres e somente GPU Intel integrada.
 - Node.js, Docker Engine 29.1.3 e Docker Compose 2.40.3 estão instalados; PostgreSQL e Ollama ainda não estão instalados.
 - O usuário `ia-user` pertence ao grupo `docker`; o daemon e a execução de containers foram validados.
+- A Fase 1 foi concluída: Ollama 0.33.1 está saudável e restrito a `127.0.0.1:11434`; `deepseek-r1:7b` é o modelo padrão provisório.
 
 ## Ponto de retomada
 
 Atualizado em: 2026-08-29 UTC.
 
-- Última ação concluída: Fase 0 validada integralmente, incluindo acesso ao daemon, `hello-world`, health check, reinício, persistência do volume, ausência de portas publicadas e encerramento do Compose.
-- Verificações realizadas: Docker Engine 29.1.3 com `overlayfs`; Compose 2.40.3; `docker run --rm hello-world`; `docker compose config --quiet`; `docker compose up -d --wait`; estado `healthy`; reinício seguido de nova saúde; ausência de endereço em `docker compose port smoke 8080`; `docker compose down`; `git diff --check`.
+- Última ação concluída: comparados `deepseek-r1:1.5b` e `deepseek-r1:7b` pela API local do Ollama; o 7B foi aceito provisoriamente.
+- Verificações realizadas: três prompts por modelo; 7B com 5,34–6,10 tokens/s, carga de 5,64 s e 6,00 GiB observados; serviço saudável após reinício; modelos persistidos; API vinculada somente a `127.0.0.1:11434`.
 - Trabalho em andamento: nenhum.
-- Próximo passo exato: iniciar a Fase 1 selecionando e validando um modelo DeepSeek pequeno e quantizado adequado à CPU e aos 14 GiB de RAM.
-- Bloqueios conhecidos: nenhum para iniciar a Fase 1. O UFW está inativo, portanto não oferece uma camada adicional de filtragem caso portas sejam publicadas no futuro.
+- Próximo passo exato: iniciar a Fase 2 confirmando versão, licença e contrato do OpenClaw e integrando-o ao Ollama.
+- Bloqueios conhecidos: nenhum para iniciar a Fase 2. O UFW está inativo; o Ollama está protegido por bind em loopback.
 
 ## Decisões vigentes
 
@@ -71,6 +72,13 @@ Atualizado em: 2026-08-29 UTC.
 5. Executar um teste local de inferência ponta a ponta antes de criar Next.js, NestJS ou o RAG.
 
 ## Histórico
+
+### 2026-08-29 — Fase 1 concluída
+
+- Ollama 0.33.1 foi adicionado ao Compose com volume persistente, health check e API restrita ao loopback.
+- O 1.5B apresentou 22,46–25,21 tokens/s e 1,28 GiB, mas falhou em instruções essenciais.
+- O 7B apresentou 5,34–6,10 tokens/s e 6,00 GiB, com conteúdo correto e pequenos desvios de formato; foi aceito provisoriamente.
+- Reinício, saúde e persistência dos modelos foram validados. Resultados detalhados estão em `docs/PHASE1_RESULTS.md`.
 
 ### 2026-08-29 — Base versionável da Fase 0 preparada
 

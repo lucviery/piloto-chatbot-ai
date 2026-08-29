@@ -1,6 +1,23 @@
 name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}
 
 services:
+  ollama:
+    image: ollama/ollama:0.33.1
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_KEEP_ALIVE: 5m
+    healthcheck:
+      test: [CMD, ollama, list]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    ports:
+      - 127.0.0.1:${OLLAMA_HOST_PORT:-11434}:11434
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+
   smoke:
     image: alpine:3.22.1
     command:
@@ -33,5 +50,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  ollama-data:
+    name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}-ollama-data
   smoke-data:
     name: ${COMPOSE_PROJECT_NAME:-piloto-chatbot-ai}-smoke-data

@@ -48,6 +48,8 @@ Critérios de aceite:
 
 Objetivo: validar cedo se o hardware atende ao piloto.
 
+Status: concluída em 2026-08-29. O `deepseek-r1:7b` foi aceito provisoriamente; resultados em `docs/PHASE1_RESULTS.md`.
+
 Entregas:
 
 - Instalar ou executar Ollama de forma compatível com a máquina.

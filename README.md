@@ -18,6 +18,7 @@ O RAG é reservado para conhecimento documental, como manuais, políticas e proc
 - [Inventário da máquina de desenvolvimento, testes e hospedagem](docs/ENVIRONMENT.md)
 - [Roadmap executável e critérios de aceite do MVP](docs/ROADMAP.md)
 - [Operação, diagnóstico e limpeza segura da base Docker](docs/OPERATIONS.md)
+- [Resultados do benchmark da IA local](docs/PHASE1_RESULTS.md)
 - [Imagem da arquitetura em SVG](docs/arquitetura-piloto-chatbot-ai.svg)
 
 ## Escopo inicial

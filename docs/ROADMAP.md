@@ -110,6 +110,8 @@ Critérios de aceite:
 
 Objetivo: entregar o primeiro chatbot utilizável na rede autorizada.
 
+Status: em andamento desde 2026-08-29. Interface, estados, testes de componentes, build e fluxo real no Chrome foram aprovados; resta construir e validar o serviço `web` dentro do Compose.
+
 Entregas:
 
 - Criar interface de conversa responsiva e acessível.

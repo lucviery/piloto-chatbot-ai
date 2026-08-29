@@ -52,3 +52,17 @@ curl -X POST http://127.0.0.1:3000/messages \
 ```
 
 O endpoint de mensagens aceita texto de até 4.000 caracteres e identificadores UUID opcionais `sessionId` e `conversationId`; quando ausentes, a API os cria. A resposta inclui esses identificadores, o ID da mensagem e o `correlationId`. Nesta etapa, todas as mensagens seguem pela rota `direct` para o Ollama. Os contratos de RAG e Tools já estão isolados em módulos próprios, mas seus provedores serão adicionados somente nas fases correspondentes.
+
+## Interface web
+
+A interface Next.js está em `web/` e acessa somente sua própria rota `/api/messages`. Essa rota server-side encaminha a requisição para a API NestJS pela rede interna do Compose; o navegador não conhece os endereços do Ollama ou de outros serviços internos.
+
+```bash
+cd web
+npm run typecheck
+npm test
+npm run build
+npm run test:e2e
+```
+
+No Compose, o site fica restrito ao loopback em `http://127.0.0.1:3001` por padrão.

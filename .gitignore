@@ -6,6 +6,10 @@ node_modules/
 .next/
 dist/
 coverage/
+web/.next/
+web/test-results/
+web/playwright-report/
+*.tsbuildinfo
 
 *.log
 .DS_Store

@@ -83,6 +83,7 @@ Atualizado em: 2026-08-29 UTC.
 - Autorizada a indexação de todas as páginas públicas acessíveis em `https://dokuwiki.megaue.com.br`.
 - Definida atualização diária; ações técnicas, busca, histórico, mídia e administração ficam fora do crawler.
 - Implementados versionamento documental, fragmentos vetoriais, ingestão idempotente, recuperação com limiar, fontes na API/interface e avaliação inicial com meta de 80%.
+- A primeira resposta RAG excedeu 180 segundos com cinco fragmentos no DeepSeek 7B em CPU; o contexto foi reduzido a três fragmentos de até 800 caracteres e a geração limitada a 512 tokens para nova validação.
 
 ### 2026-08-29 — DokuWiki indicado como corpus inicial do RAG
 

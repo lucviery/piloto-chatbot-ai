@@ -30,16 +30,16 @@ describe('MegaueChatbotClient', () => {
     );
   });
 
-  it('maps a 422 detail to a safe typed error', async () => {
+  it('maps a 422 response to a safe typed error without exposing its detail', async () => {
     process.env.MEGAUE_API_BASE_URL = 'https://api.example.test';
     global.fetch = jest.fn().mockResolvedValue(new Response(
-      JSON.stringify({ detail: 'Localizador não encontrado' }),
+      JSON.stringify({ detail: 'internal parser failure with sensitive implementation data' }),
       { status: 422, headers: { 'content-type': 'application/json' } },
     ));
 
     await expect(new MegaueChatbotClient().searchByLocator('ABC')).rejects.toMatchObject({
       code: 'MEGAUE_VALIDATION_ERROR',
-      message: 'Localizador não encontrado',
+      message: 'A Megauê não aceitou os dados informados.',
       retryable: false,
       status: 422,
     });
@@ -48,5 +48,12 @@ describe('MegaueChatbotClient', () => {
   it('fails explicitly when the base URL is not configured', async () => {
     delete process.env.MEGAUE_API_BASE_URL;
     await expect(new MegaueChatbotClient().searchByLocator('ABC')).rejects.toBeInstanceOf(ToolExecutionError);
+  });
+
+  it('accepts any successful cancel response without requiring a JSON body', async () => {
+    process.env.MEGAUE_API_BASE_URL = 'https://api.example.test';
+    global.fetch = jest.fn().mockResolvedValue(new Response('', { status: 200 }));
+
+    await expect(new MegaueChatbotClient().cancelOrder(123, '456789')).resolves.toBeUndefined();
   });
 });

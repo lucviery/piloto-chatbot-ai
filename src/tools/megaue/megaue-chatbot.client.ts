@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ToolExecutionError } from '../tools.types';
-import {
-  MegaueErrorResponse,
-  OrderLocatorResponse,
-  RequestCancelCodeResponse,
-} from './megaue.types';
+import { OrderLocatorResponse, RequestCancelCodeResponse } from './megaue.types';
 
 @Injectable()
 export class MegaueChatbotClient {
@@ -24,13 +20,14 @@ export class MegaueChatbotClient {
     await this.request<undefined>('/api/chatbot/cancel-order', 'PUT', {
       orderId: String(orderId),
       code,
-    });
+    }, false);
   }
 
   private async request<T>(
     path: string,
     method: 'GET' | 'POST' | 'PUT',
     query: Record<string, string>,
+    expectsJson = true,
   ): Promise<T> {
     if (!this.baseUrl) {
       throw new ToolExecutionError(
@@ -64,19 +61,18 @@ export class MegaueChatbotClient {
     }
 
     if (!response.ok) {
-      const body = await this.safeErrorBody(response);
       const businessError = response.status >= 400 && response.status < 500;
       throw new ToolExecutionError(
         response.status === 422 ? 'MEGAUE_VALIDATION_ERROR' : 'MEGAUE_API_ERROR',
-        body.detail ?? (businessError
+        businessError
           ? 'A Megauê não aceitou os dados informados.'
-          : 'A Megauê não conseguiu concluir a operação.'),
+          : 'A Megauê não conseguiu concluir a operação.',
         !businessError,
         response.status,
       );
     }
 
-    if (response.status === 204) return undefined as T;
+    if (!expectsJson || response.status === 204) return undefined as T;
     try {
       return (await response.json()) as T;
     } catch {
@@ -86,14 +82,6 @@ export class MegaueChatbotClient {
         true,
         response.status,
       );
-    }
-  }
-
-  private async safeErrorBody(response: Response): Promise<MegaueErrorResponse> {
-    try {
-      return (await response.json()) as MegaueErrorResponse;
-    } catch {
-      return {};
     }
   }
 }

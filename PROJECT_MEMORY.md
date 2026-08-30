@@ -35,11 +35,11 @@ Atualizado em: 2026-08-30 UTC.
 
 Atualizado em: 2026-08-30 UTC.
 
-- Última ação concluída: concluída a Fase 3, integrando classificador, roteador por estado, fluxos determinísticos, silêncio humano e encerramento autenticado ao orquestrador, streaming e interface.
-- Verificações realizadas: tipagem e build da API aprovados; 43 testes unitários e 7 testes HTTP aprovados; tipagem, 3 testes e build da interface aprovados. O teste HTTP precisou executar fora do sandbox apenas para abrir porta efêmera local.
+- Última ação concluída: concluída a Fase 4 com cancelamento e atendimento humano validados ponta a ponta contra as integrações de homologação.
+- Verificações realizadas: os cinco containers ficaram saudáveis; health e readiness responderam; 44 testes unitários, 7 testes HTTP, tipagem e build passaram; cancelamento real terminou em `CANCELED`; webhook entregou a notificação; modo `HUMAN` permaneceu silencioso; encerramento autenticado restaurou `BOT/IDLE` com contexto limpo.
 - Trabalho em andamento: nenhum.
-- Próximo passo exato: iniciar a Fase 4 configurando ambiente autorizado, aplicando a migração no PostgreSQL real e validando os fluxos ponta a ponta contra API Megaue e webhook de suporte.
-- Bloqueios conhecidos: os contratos estão documentados, mas URLs de ambiente, autenticação da API Megaue e webhook do atendimento deverão ser fornecidos por configuração segura antes da validação integrada.
+- Próximo passo exato: consolidar as correções e evidências da Fase 4 em commit e iniciar ativação gradual acompanhando erros externos, handoffs e tempo de resposta.
+- Bloqueios conhecidos: nenhum para o escopo validado da Fase 4.
 
 ## Decisões vigentes
 
@@ -80,6 +80,32 @@ Atualizado em: 2026-08-30 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-30 — Integrações de homologação exercitadas
+
+- `MEGAUE_API_BASE_URL` apontou para `https://api-homolog.megaue.com.br`; uma consulta com localizador propositalmente inválido confirmou alcance do endpoint sem executar mutação.
+- A resposta 422 da API continha detalhe técnico impróprio para o usuário. O cliente deixou de propagar corpos externos e passou a mapear respostas 4xx para mensagem pública fixa; foi adicionado teste de regressão e a correção foi validada novamente em homologação.
+- Após renovação do token, um pedido autorizado percorreu consulta, confirmação, solicitação de código e cancelamento real em homologação; a consulta posterior confirmou status `CANCELED`.
+- Homologação respondeu ao cancelamento com sucesso `2xx` sem JSON. O cliente passou a aceitar qualquer `2xx` desse endpoint sem interpretar corpo; um teste de regressão cobre a divergência. Como a versão anterior já havia aplicado a mutação antes de acusar resposta inválida, a conversa foi reconciliada diretamente para `BOT/IDLE` sem repetir a chamada externa.
+- O primeiro webhook configurado retornou HTTP `404` e falhou sem mudar prematuramente a conversa para `HUMAN`. Após sua substituição, a entrega real foi confirmada, a conversa entrou em `HUMAN`, permaneceu silenciosa e voltou a `BOT/IDLE` por encerramento autenticado.
+- Em uma conversa exclusivamente de teste colocada em `HUMAN`, o bot permaneceu silencioso. O encerramento com `INTERNAL_API_TOKEN` respondeu com sucesso e restaurou `BOT/IDLE`.
+- `homolog.env` foi restringido a modo `600` e incluído no `.gitignore`; nenhum valor secreto foi registrado na documentação ou no Git.
+
+### 2026-08-30 — Fase 4 concluída
+
+- Cancelamento e atendimento humano foram percorridos ponta a ponta com as integrações de homologação autorizadas.
+- O cancelamento foi confirmado pela consulta posterior do pedido com status `CANCELED`; o cliente foi ajustado ao contrato real de sucesso `2xx` sem corpo JSON.
+- O webhook válido recebeu a notificação de teste e somente então o estado avançou para `HUMAN`.
+- Uma mensagem posterior produziu `human_silent`, sem conteúdo do bot; o endpoint interno autenticado encerrou o atendimento e limpou o estado para `BOT/IDLE`.
+- Todos os critérios de conclusão do plano foram demonstrados sem depender de RAG ou LLM.
+
+### 2026-08-30 — Fase 4 iniciada no ambiente integrado
+
+- API e web foram reconstruídas a partir da implementação da Fase 3; PostgreSQL, Ollama, API, web e smoke ficaram saudáveis.
+- A migração `003_conversation_flow_state` foi aplicada e sua tabela foi conferida no PostgreSQL real.
+- Health, readiness, site, início de cancelamento, oferta e recusa de suporte foram validados pelas portas locais; as transições esperadas foram confirmadas diretamente no banco.
+- A ausência de `MEGAUE_API_BASE_URL` foi tratada com mensagem segura, sem avanço indevido do estado de cancelamento.
+- A suíte HTTP passou com 7 testes. A validação externa permanece pendente das URLs e credenciais mantidas fora do Git.
 
 ### 2026-08-30 — Roteamento por estado integrado ao canal web
 

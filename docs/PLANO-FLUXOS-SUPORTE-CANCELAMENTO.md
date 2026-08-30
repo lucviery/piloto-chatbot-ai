@@ -7,13 +7,15 @@ Data da decisão: 2026-08-30 UTC.
 - [x] Fase 1 — Fundação: tipos e estados, migração do banco e repositório com controle otimista de concorrência.
 - [x] Fase 2 — Construção dos fluxos e Tools.
 - [x] Fase 3 — Integração com classificador e orquestrador.
-- [ ] Fase 4 — Validação integrada e ativação.
+- [x] Fase 4 — Validação integrada e ativação.
 
 Implementação da Fase 1 concluída em 2026-08-30 UTC. A migração `003_conversation_flow_state` será aplicada automaticamente pelo `MigrationService` na próxima inicialização da API conectada ao PostgreSQL.
 
 Implementação da Fase 2 concluída em 2026-08-30 UTC. Foram criados o cliente HTTP da Megaue, as quatro Tools autorizadas, os handlers determinísticos, os services com reserva de versão antes de efeitos externos e os testes unitários. A validação contra serviços reais permanece para a Fase 4, pois URLs e credenciais não são versionadas.
 
 Implementação da Fase 3 concluída em 2026-08-30 UTC. O orquestrador passou a carregar o estado antes de rotear, continuar fluxos ativos sem reclassificação, classificar apenas cancelamentos explícitos e oferecer atendimento humano nos demais casos. Respostas normais, streaming, silêncio em modo humano e encerramento interno autenticado foram integrados. RAG e Ollama não são chamados pelo caminho atual de mensagens.
+
+Fase 4 concluída em 2026-08-30 UTC. As imagens atuais foram reconstruídas, a migração `003_conversation_flow_state` foi aplicada ao PostgreSQL real e saúde, readiness, interface, persistência e transições locais foram validadas. Um cancelamento completo foi confirmado na API Megaue de homologação. O webhook real entregou a notificação antes da mudança para `HUMAN`; silêncio humano e encerramento autenticado também foram aprovados.
 
 ## Objetivo
 

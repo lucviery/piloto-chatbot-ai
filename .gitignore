@@ -1,5 +1,6 @@
 .env
 .env.*
+homolog.env
 !.env.example
 homolog.env
 !homolog.env.example

@@ -38,9 +38,16 @@ services:
       OLLAMA_BASE_URL: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-deepseek-r1:7b}
       OLLAMA_TIMEOUT_MS: ${OLLAMA_TIMEOUT_MS:-180000}
-      OLLAMA_NUM_PREDICT: ${OLLAMA_NUM_PREDICT:-768}
+      OLLAMA_NUM_PREDICT: ${OLLAMA_NUM_PREDICT:-256}
+      OLLAMA_TEMPERATURE: ${OLLAMA_TEMPERATURE:-0.2}
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-embeddinggemma:latest}
       RAG_BASE_URL: ${RAG_BASE_URL:-https://dokuwiki.megaue.com.br}
+      MEGAUE_API_BASE_URL: ${MEGAUE_API_BASE_URL:-}
+      MEGAUE_API_TOKEN: ${MEGAUE_API_TOKEN:-}
+      MEGAUE_API_TIMEOUT_MS: ${MEGAUE_API_TIMEOUT_MS:-15000}
+      SUPPORT_DISCORD_WEBHOOK_URL: ${SUPPORT_DISCORD_WEBHOOK_URL:-}
+      SUPPORT_WEBHOOK_TIMEOUT_MS: ${SUPPORT_WEBHOOK_TIMEOUT_MS:-10000}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-}
       PGHOST: postgres
       PGPORT: 5432
       PGDATABASE: ${POSTGRES_DB:-piloto_chatbot}
@@ -97,7 +104,7 @@ services:
     image: ollama/ollama:0.33.1
     environment:
       OLLAMA_HOST: 0.0.0.0:11434
-      OLLAMA_KEEP_ALIVE: 5m
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-30m}
     healthcheck:
       test: [CMD, ollama, list]
       interval: 10s

@@ -3,6 +3,19 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Chat, createClientId } from './chat';
 
+function streamResponse(events: unknown[]) {
+  const encoder = new TextEncoder();
+  return {
+    ok: true,
+    body: new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (const event of events) controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
+        controller.close();
+      },
+    }),
+  };
+}
+
 describe('Chat', () => {
   afterEach(() => {
     cleanup();
@@ -17,18 +30,15 @@ describe('Chat', () => {
   });
 
   it('sends a message and renders the answer', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({
-        id: 'answer-1',
-        sessionId: 'session-1',
-        conversationId: 'conversation-1',
-        correlationId: 'correlation-1',
-        content: 'Olá! Como posso ajudar?',
-        model: 'deepseek-test',
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(streamResponse([
+      { type: 'delta', content: 'Olá! ' },
+      { type: 'delta', content: 'Como posso ajudar?' },
+      {
+        type: 'done', id: 'answer-1', sessionId: 'session-1', conversationId: 'conversation-1',
+        correlationId: 'correlation-1', content: 'Olá! Como posso ajudar?', model: 'deepseek-test',
         sources: [{ title: 'Manual', url: 'https://dokuwiki.megaue.com.br/manual' }],
-      }),
-    }));
+      },
+    ])));
     const user = userEvent.setup();
     render(<Chat />);
 
@@ -47,13 +57,13 @@ describe('Chat', () => {
   it('shows an understandable error and retries', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({ ok: false, json: () => Promise.resolve({ message: 'Serviço indisponível.' }) })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          id: 'answer-2', sessionId: 'session-1', conversationId: 'conversation-1',
+      .mockResolvedValueOnce(streamResponse([
+        { type: 'delta', content: 'Recuperado' },
+        {
+          type: 'done', id: 'answer-2', sessionId: 'session-1', conversationId: 'conversation-1',
           correlationId: 'correlation-2', content: 'Recuperado', model: 'deepseek-test',
-        }),
-      });
+        },
+      ]));
     vi.stubGlobal('fetch', fetchMock);
     const user = userEvent.setup();
     render(<Chat />);

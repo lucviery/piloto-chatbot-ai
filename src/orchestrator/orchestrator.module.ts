@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { LlmModule } from '../llm/llm.module';
-import { RagModule } from '../rag/rag.module';
-import { ToolsModule } from '../tools/tools.module';
+import { FlowsModule } from '../flows/flows.module';
 import { OrchestratorController } from './orchestrator.controller';
 import { OrchestratorService } from './orchestrator.service';
 
 @Module({
-  imports: [LlmModule, RagModule, ToolsModule],
+  imports: [FlowsModule],
   controllers: [OrchestratorController],
   providers: [OrchestratorService],
 })

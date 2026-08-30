@@ -48,10 +48,16 @@ curl http://127.0.0.1:3000/health
 curl -X POST http://127.0.0.1:3000/messages \
   -H 'content-type: application/json' \
   -H 'x-correlation-id: exemplo-1' \
-  -d '{"message":"Responda apenas: ok"}'
+  -d '{"message":"Quero cancelar meu pedido"}'
 ```
 
-O endpoint de mensagens aceita texto de até 4.000 caracteres e identificadores UUID opcionais `sessionId` e `conversationId`; quando ausentes, a API os cria. A resposta inclui esses identificadores, o ID da mensagem e o `correlationId`. Nesta etapa, todas as mensagens seguem pela rota `direct` para o Ollama. Os contratos de RAG e Tools já estão isolados em módulos próprios, mas seus provedores serão adicionados somente nas fases correspondentes.
+O endpoint de mensagens aceita texto de até 4.000 caracteres e identificadores UUID opcionais `sessionId` e `conversationId`; quando ausentes, a API os cria. A resposta inclui esses identificadores, o ID da mensagem, o `correlationId`, a rota e quem controla o atendimento.
+
+O escopo operacional inicial possui duas rotas: cancelamento automatizado e oferta de atendimento humano para qualquer outro assunto. O estado persistido decide a próxima etapa; fluxos ativos não são reclassificados. Em modo `HUMAN`, a mensagem é persistida, mas o bot não emite texto. O RAG e o Ollama não participam desses fluxos.
+
+A interface usa `POST /messages/stream`, que entrega respostas determinísticas em NDJSON e encerra com um evento `done`. `POST /messages` permanece disponível para clientes que precisam da resposta completa em uma única operação.
+
+O gateway ou painel interno encerra um atendimento humano com `POST /internal/attendance/{conversationId}/close`, autenticado pelo header `x-internal-token`. O segredo deve existir somente no ambiente como `INTERNAL_API_TOKEN`.
 
 ## Interface web
 
@@ -67,6 +73,6 @@ npm run test:e2e
 
 No Compose, o site fica restrito ao loopback em `http://127.0.0.1:3001` por padrão.
 
-## Conhecimento documental
+## Conhecimento documental preservado
 
-O RAG indexa sob demanda as páginas públicas autorizadas de `https://dokuwiki.megaue.com.br`. Documentos são versionados por hash, fragmentados e armazenados no pgvector com URL e título. Respostas documentais retornam fontes clicáveis; ausência de similaridade suficiente mantém o fluxo direto, sem inventar evidência documental.
+A infraestrutura de RAG permanece no repositório para um corpus documental futuro, mas não é consultada pelos fluxos atuais de cancelamento e atendimento humano.

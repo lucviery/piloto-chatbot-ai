@@ -1,28 +1,26 @@
 import {
-  GatewayTimeoutException,
   INestApplication,
-  ServiceUnavailableException,
   ValidationPipe,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request = require('supertest');
 import { AppModule } from '../src/app.module';
-import { LlmService } from '../src/llm/llm.service';
 import { ConversationRepository } from '../src/database/conversation.repository';
-import { RagService } from '../src/rag/rag.service';
+import { FlowRouterService } from '../src/flows/flow-router.service';
 
 describe('API (e2e)', () => {
   let app: INestApplication;
-  const generate = jest.fn();
+  const route = jest.fn();
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(LlmService)
-      .useValue({ generate })
       .overrideProvider(ConversationRepository)
-      .useValue({ saveInteraction: jest.fn().mockResolvedValue(undefined) })
-      .overrideProvider(RagService)
-      .useValue({ retrieve: jest.fn().mockResolvedValue({ context: '', sources: [] }) })
+      .useValue({
+        ensureConversation: jest.fn().mockResolvedValue(undefined),
+        saveInteraction: jest.fn().mockResolvedValue(undefined),
+      })
+      .overrideProvider(FlowRouterService)
+      .useValue({ route })
       .compile();
 
     app = module.createNestApplication();
@@ -38,7 +36,11 @@ describe('API (e2e)', () => {
     request(app.getHttpServer()).get('/health/ready').expect(503));
 
   it('returns an orchestrated message', async () => {
-    generate.mockResolvedValueOnce({ content: 'Resposta local', model: 'test-model' });
+    route.mockResolvedValueOnce({
+      route: 'support',
+      content: 'Deseja falar com um atendente humano?',
+      next: { mode: 'BOT', activeFlow: 'SUPPORT', step: 'OFFERING_HUMAN_SUPPORT', context: {} },
+    });
     const sessionId = '123e4567-e89b-42d3-a456-426614174000';
     const conversationId = '123e4567-e89b-42d3-a456-426614174001';
     const response = await request(app.getHttpServer())
@@ -51,9 +53,10 @@ describe('API (e2e)', () => {
       correlationId: 'corr-e2e',
       sessionId,
       conversationId,
-      route: 'direct',
-      content: 'Resposta local',
-      model: 'test-model',
+      route: 'support',
+      content: 'Deseja falar com um atendente humano?',
+      model: 'flow-engine-v1',
+      handledBy: 'bot',
     });
     expect(response.headers['x-correlation-id']).toBe('corr-e2e');
   });
@@ -61,21 +64,45 @@ describe('API (e2e)', () => {
   it('rejects invalid input', () =>
     request(app.getHttpServer()).post('/messages').send({ message: '' }).expect(400));
 
-  it('returns 504 when the model times out', () => {
-    generate.mockRejectedValueOnce(
-      new GatewayTimeoutException({ code: 'LLM_TIMEOUT', message: 'O modelo excedeu o limite.' }),
-    );
-    return request(app.getHttpServer()).post('/messages').send({ message: 'Olá' }).expect(504);
+  it('streams an orchestrated message as NDJSON', async () => {
+    route.mockResolvedValueOnce({
+      route: 'cancel',
+      content: 'Informe o localizador.',
+      next: { mode: 'BOT', activeFlow: 'CANCEL', step: 'WAITING_CANCEL_LOCATOR', context: {} },
+    });
+
+    const response = await request(app.getHttpServer())
+      .post('/messages/stream')
+      .set('x-correlation-id', 'corr-stream')
+      .send({ message: 'Olá' })
+      .expect(200)
+      .expect('content-type', /application\/x-ndjson/);
+
+    const events = response.text.trim().split('\n').map((line) => JSON.parse(line));
+    expect(events[0]).toEqual({ type: 'delta', content: 'Informe o localizador.' });
+    expect(events[1]).toMatchObject({
+      type: 'done',
+      correlationId: 'corr-stream',
+      route: 'cancel',
+      content: 'Informe o localizador.',
+      model: 'flow-engine-v1',
+    });
   });
 
-  it('returns 503 when the model is unavailable', () => {
-    generate.mockRejectedValueOnce(
-      new ServiceUnavailableException({
-        code: 'LLM_UNAVAILABLE',
-        message: 'O modelo não está disponível.',
-      }),
-    );
-    return request(app.getHttpServer()).post('/messages').send({ message: 'Olá' }).expect(503);
+  it('returns no delta while human attendance owns the conversation', async () => {
+    route.mockResolvedValueOnce({
+      route: 'human_silent', content: null,
+      next: { mode: 'HUMAN', activeFlow: 'SUPPORT', step: 'HUMAN', context: {} },
+    });
+    const response = await request(app.getHttpServer())
+      .post('/messages/stream')
+      .send({ message: 'Olá?' })
+      .expect(200);
+    const events = response.text.trim().split('\n').map((line) => JSON.parse(line));
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({
+      type: 'done', route: 'human_silent', handledBy: 'human', content: '',
+    });
   });
 
   it('exposes essential metrics without message content', async () => {

@@ -14,3 +14,14 @@ export interface Tool<TInput = unknown, TOutput = unknown> {
   execute(input: TInput, context: ToolContext): Promise<ToolResult<TOutput>>;
 }
 
+export class ToolExecutionError extends Error {
+  constructor(
+    public readonly code: string,
+    message: string,
+    public readonly retryable: boolean,
+    public readonly status?: number,
+  ) {
+    super(message);
+    this.name = 'ToolExecutionError';
+  }
+}

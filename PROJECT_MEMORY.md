@@ -12,7 +12,7 @@ Memória operacional e evolutiva do projeto. Este arquivo complementa o `PROJECT
 
 ## Estado atual confirmado
 
-Atualizado em: 2026-08-29 UTC.
+Atualizado em: 2026-08-30 UTC.
 
 - Repositório GitHub: `lucviery/piloto-chatbot-ai`.
 - Branch principal: `main`.
@@ -33,13 +33,13 @@ Atualizado em: 2026-08-29 UTC.
 
 ## Ponto de retomada
 
-Atualizado em: 2026-08-29 UTC.
+Atualizado em: 2026-08-30 UTC.
 
-- Última ação concluída: executada a validação operacional completa da Fase 5, incluindo reinício de PostgreSQL/API, comparação de contagens, retenção e restauração em banco temporário.
-- Verificações realizadas: tipagem e build aprovados; seis testes unitários e sete testes HTTP aprovados; migração idempotente aplicada; interação não sensível persistida; dados preservados após reinício; backup e restauração validados; readiness retornou PostgreSQL e Ollama `ok`; métricas responderam sem erros 5xx; site permaneceu HTTP 200.
+- Última ação concluída: concluída a Fase 3, integrando classificador, roteador por estado, fluxos determinísticos, silêncio humano e encerramento autenticado ao orquestrador, streaming e interface.
+- Verificações realizadas: tipagem e build da API aprovados; 43 testes unitários e 7 testes HTTP aprovados; tipagem, 3 testes e build da interface aprovados. O teste HTTP precisou executar fora do sandbox apenas para abrir porta efêmera local.
 - Trabalho em andamento: nenhum.
-- Próximo passo exato: disponibilizar `embeddinggemma:latest`, reconstruir API/web, executar ingestão e avaliação do DokuWiki e validar uma resposta com fontes no navegador.
-- Bloqueios conhecidos: nenhum de definição; a validação operacional exige comandos Docker com autenticação administrativa interativa.
+- Próximo passo exato: iniciar a Fase 4 configurando ambiente autorizado, aplicando a migração no PostgreSQL real e validando os fluxos ponta a ponta contra API Megaue e webhook de suporte.
+- Bloqueios conhecidos: os contratos estão documentados, mas URLs de ambiente, autenticação da API Megaue e webhook do atendimento deverão ser fornecidos por configuração segura antes da validação integrada.
 
 ## Decisões vigentes
 
@@ -54,6 +54,9 @@ Atualizado em: 2026-08-29 UTC.
 - O trabalho deve avançar com autonomia em ações reversíveis e de baixo risco; permissões elevadas devem ser mínimas, justificadas e restritas ao alvo necessário.
 - Containers e configurações locais são preferíveis a alterações globais quando atenderem ao requisito.
 - A máquina não possui GPU dedicada; o primeiro modelo local deverá ser pequeno e quantizado, com medição de desempenho antes de qualquer expansão.
+- O escopo inicial do chatbot terá somente cancelamento automatizado; qualquer outro assunto oferecerá atendimento humano.
+- O estado persistido será a fonte de verdade dos fluxos. O LLM poderá classificar `CANCEL | OTHER`, mas não controlará transições nem chamadas transacionais.
+- Durante `mode = HUMAN`, o bot permanecerá silencioso até uma ação explícita do atendente restaurar `BOT/IDLE`.
 
 ## Aprendizados validados
 
@@ -77,6 +80,55 @@ Atualizado em: 2026-08-29 UTC.
 4. Criar a interface Next.js após o primeiro fluxo de API aprovado.
 
 ## Histórico
+
+### 2026-08-30 — Roteamento por estado integrado ao canal web
+
+- O caminho de mensagens agora garante a sessão/conversa, cria ou carrega o estado e continua fluxos ativos antes de considerar uma nova intenção.
+- O classificador local e conservador reconhece somente expressões explícitas de cancelamento; todo conteúdo ambíguo ou diferente segue para oferta de atendimento humano sem invocar LLM.
+- O orquestrador deixou de consultar RAG e Ollama nesses fluxos e identifica respostas com `flow-engine-v1`, rota e `handledBy`.
+- Respostas determinísticas funcionam em JSON e streaming. Em `HUMAN`, somente a mensagem inbound é persistida e nenhum delta ou balão vazio é produzido pela interface.
+- Adicionado encerramento explícito em `POST /internal/attendance/:conversationId/close`, protegido por token interno comparado em tempo constante; a ação restaura `BOT/IDLE`.
+- API: tipagem, build, 43 testes unitários e 7 testes HTTP aprovados. Interface: tipagem, 3 testes e build aprovados.
+
+### 2026-08-30 — Tools e fluxos determinísticos concluídos
+
+- Implementado `MegaueChatbotClient` configurável, com timeout, token Bearer opcional, codificação segura de parâmetros e erros externos normalizados.
+- Criadas as Tools `SearchOrderByLocatorTool`, `RequestCancelCodeTool`, `CancelOrderTool` e `NotifyHumanSupportTool`, com validação das respostas Megaue e sem persistência do código de cancelamento.
+- A notificação ao Discord limita o tamanho do conteúdo e desativa menções, evitando que texto fornecido pelo usuário acione notificações indevidas.
+- Implementados handlers determinísticos para localizar e validar pedidos, confirmar cancelamento, solicitar/validar código, coletar suporte opcionalmente com localizador, realizar handoff e manter silêncio em modo humano.
+- Implementados services que reservam atomicamente a versão do estado antes de executar efeitos externos, impedindo duplicidade por mensagens concorrentes.
+- As configurações `MEGAUE_API_BASE_URL`, `MEGAUE_API_TOKEN`, timeouts e `SUPPORT_DISCORD_WEBHOOK_URL` foram declaradas sem valores reais em `.env.example` e encaminhadas ao container da API.
+- Tipagem, build, 30 testes unitários e verificação de diff passaram. A próxima fase integrará os fluxos ao orquestrador.
+
+### 2026-08-30 — Fundação dos fluxos de cancelamento e suporte concluída
+
+- Registrado o plano completo em `docs/PLANO-FLUXOS-SUPORTE-CANCELAMENTO.md` e limitada a automação ao cancelamento, com encaminhamento humano para qualquer outro assunto.
+- Criados contratos tipados para modo, fluxo, etapas, contexto permitido e transições de conversa.
+- Adicionada a migração `003_conversation_flow_state`, com integridade entre modo, etapa e fluxo, contexto `jsonb`, versão e data de atualização.
+- Implementado `ConversationStateRepository` com inicialização idempotente e transições atômicas condicionadas à versão esperada; atualizações concorrentes obsoletas retornam conflito explícito.
+- A migração será aplicada ao PostgreSQL pelo mecanismo existente na próxima inicialização da API; nenhuma alteração operacional em container foi necessária nesta fase.
+- Tipagem e 12 testes unitários passaram. O próximo trabalho é implementar o cliente Megaue e as Tools de cancelamento.
+
+### 2026-08-29 — Latência percebida reduzida com streaming
+
+- Adicionado `POST /messages/stream` em NDJSON, mantendo `POST /messages` para compatibilidade; os fragmentos atravessam API NestJS, proxy Next.js e interface conforme são gerados.
+- A resposta completa continua sendo persistida antes do evento final `done`, preservando IDs, correlação, rota, modelo e fontes.
+- O limite padrão de geração caiu de 768 para 384 tokens e o `OLLAMA_KEEP_ALIVE` aumentou de 5 para 30 minutos.
+- Na validação real pela rota web, a primeira chamada após recriar o Ollama começou a responder em 35,0 s; com o modelo aquecido, começou em 12,6 s e terminou em 18,2 s. O streaming melhora a percepção após o primeiro token, mas a CPU continua sendo o principal gargalo desse 7B.
+- Passaram oito testes unitários, oito testes HTTP, três testes da interface, tipagem e builds de produção da API e web.
+
+### 2026-08-29 — Resposta RAG de procedimento excedeu o limite
+
+- A pergunta “Como ativo a conta no site?” retornou termos sem evidência (“Brevi”) e terminou no meio do terceiro passo após 86 s; o registro confirmou que o corte ocorreu na geração, não na interface.
+- O prompt de sistema passou a proibir nomes inventados e limitar orientações a três passos e 80 palavras; o padrão de geração foi reduzido para 256 tokens para diminuir cortes e latência.
+- Como o RAG não encontrou evidência para ativação de conta, a rota direta passou a instruir explicitamente o modelo a recusar procedimentos específicos sem contexto, evitando inventar telas, botões ou passos.
+
+### 2026-08-29 — Português brasileiro fixado no provedor local
+
+- O teste real revelou que mensagens diretas podiam receber respostas em outros idiomas porque somente o prompt RAG instruía o uso de português.
+- O provedor Ollama passou a enviar uma mensagem de sistema que exige português brasileiro, clareza, objetividade e transparência quando faltar informação.
+- A temperatura padrão foi definida como 0,2 e tornou-se configurável por `OLLAMA_TEMPERATURE`; o prompt RAG também passou a especificar português brasileiro.
+- Tipagem e seis testes unitários passaram; após reconstrução da API, a validação real respondeu em português brasileiro pela rota direta.
 
 ### 2026-08-29 — Escopo do corpus DokuWiki autorizado
 

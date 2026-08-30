@@ -1,47 +1,63 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { LlmService } from '../llm/llm.service';
 import { ConversationRepository } from '../database/conversation.repository';
-import { RagService } from '../rag/rag.service';
-import { RagSource } from '../rag/rag.types';
+import { FlowRouterService } from '../flows/flow-router.service';
 import { SendMessageDto } from './dto/send-message.dto';
+
+export type MessageRoute = 'cancel' | 'support' | 'human_handoff' | 'human_silent';
 
 export interface MessageResponse {
   id: string;
   sessionId: string;
   conversationId: string;
   correlationId: string;
-  route: 'direct' | 'rag';
+  route: MessageRoute;
   content: string;
-  model: string;
-  sources?: RagSource[];
+  model: 'flow-engine-v1';
+  handledBy: 'bot' | 'human';
 }
 
 @Injectable()
 export class OrchestratorService {
   constructor(
-    private readonly llm: LlmService,
     private readonly conversations: ConversationRepository,
-    private readonly rag: RagService,
+    private readonly flowRouter: FlowRouterService,
   ) {}
 
   async respond(input: SendMessageDto, correlationId: string): Promise<MessageResponse> {
+    return this.respondWith(input, correlationId);
+  }
+
+  async respondStreaming(
+    input: SendMessageDto,
+    correlationId: string,
+    onDelta: (delta: string) => void,
+  ): Promise<MessageResponse> {
+    const result = await this.respondWith(input, correlationId);
+    if (result.content) onDelta(result.content);
+    return result;
+  }
+
+  private async respondWith(
+    input: SendMessageDto,
+    correlationId: string,
+  ): Promise<MessageResponse> {
     const sessionId = input.sessionId ?? randomUUID();
     const conversationId = input.conversationId ?? randomUUID();
     const id = randomUUID();
-    const retrieved = await this.rag.retrieve(input.message);
-    const route = retrieved.sources.length > 0 ? 'rag' : 'direct';
-    const prompt = route === 'rag'
-      ? `Responda em português usando somente o contexto fornecido. Se o contexto não bastar, diga que não encontrou evidência. Cite as fontes pelos números entre colchetes.\n\nContexto:\n${retrieved.context}\n\nPergunta: ${input.message}`
-      : input.message;
-    const result = await this.llm.generate({ message: prompt });
+    await this.conversations.ensureConversation(sessionId, conversationId);
+    const flow = await this.flowRouter.route(conversationId, input.message, { correlationId });
+    const content = flow.content ?? '';
+    const handledBy = flow.route === 'human_silent' ? 'human' : 'bot';
     await this.conversations.saveInteraction({
       sessionId,
       conversationId,
       userMessage: input.message,
-      assistantMessage: result.content,
-      assistantMessageId: id,
-      model: result.model,
+      ...(content ? {
+        assistantMessage: content,
+        assistantMessageId: id,
+        model: 'flow-engine-v1' as const,
+      } : {}),
       correlationId,
     });
     return {
@@ -49,10 +65,10 @@ export class OrchestratorService {
       sessionId,
       conversationId,
       correlationId,
-      route,
-      content: result.content,
-      model: result.model,
-      ...(route === 'rag' ? { sources: retrieved.sources } : {}),
+      route: flow.route,
+      content,
+      model: 'flow-engine-v1',
+      handledBy,
     };
   }
 }

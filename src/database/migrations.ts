@@ -70,4 +70,49 @@ export const migrations: Migration[] = [
         ON rag_chunks USING hnsw (embedding vector_cosine_ops);
     `,
   },
+  {
+    version: '003_conversation_flow_state',
+    sql: `
+      CREATE TABLE IF NOT EXISTS conversation_states (
+        conversation_id uuid PRIMARY KEY REFERENCES conversations(id) ON DELETE CASCADE,
+        mode text NOT NULL DEFAULT 'BOT' CHECK (mode IN ('BOT', 'HUMAN')),
+        active_flow text CHECK (active_flow IN ('CANCEL', 'SUPPORT')),
+        step text NOT NULL DEFAULT 'IDLE' CHECK (step IN (
+          'IDLE',
+          'WAITING_CANCEL_LOCATOR',
+          'WAITING_CANCEL_CONFIRMATION',
+          'WAITING_CANCEL_CODE',
+          'OFFERING_HUMAN_SUPPORT',
+          'WAITING_SUPPORT_LOCATOR',
+          'WAITING_SUPPORT_MESSAGE',
+          'HUMAN'
+        )),
+        context jsonb NOT NULL DEFAULT '{}'::jsonb,
+        version integer NOT NULL DEFAULT 0 CHECK (version >= 0),
+        updated_at timestamptz NOT NULL DEFAULT now(),
+        CHECK (jsonb_typeof(context) = 'object'),
+        CHECK (
+          (mode = 'HUMAN' AND step = 'HUMAN' AND active_flow = 'SUPPORT')
+          OR mode = 'BOT'
+        ),
+        CHECK (
+          (step = 'IDLE' AND active_flow IS NULL)
+          OR (step IN (
+            'WAITING_CANCEL_LOCATOR',
+            'WAITING_CANCEL_CONFIRMATION',
+            'WAITING_CANCEL_CODE'
+          ) AND active_flow = 'CANCEL')
+          OR (step IN (
+            'OFFERING_HUMAN_SUPPORT',
+            'WAITING_SUPPORT_LOCATOR',
+            'WAITING_SUPPORT_MESSAGE',
+            'HUMAN'
+          ) AND active_flow = 'SUPPORT')
+        )
+      );
+
+      CREATE INDEX IF NOT EXISTS conversation_states_mode_updated_idx
+        ON conversation_states(mode, updated_at);
+    `,
+  },
 ];

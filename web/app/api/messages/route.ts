@@ -7,7 +7,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const payload: unknown = await request.json();
-    const response = await fetch(`${apiUrl}/messages`, {
+    const response = await fetch(`${apiUrl}/messages/stream`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -17,8 +17,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       signal: AbortSignal.timeout(190000),
       cache: 'no-store',
     });
-    const body: unknown = await response.json();
-    return NextResponse.json(body, { status: response.status });
+    if (!response.ok) {
+      const body: unknown = await response.json();
+      return NextResponse.json(body, { status: response.status });
+    }
+    return new NextResponse(response.body, {
+      status: response.status,
+      headers: {
+        'content-type': response.headers.get('content-type') ?? 'application/x-ndjson; charset=utf-8',
+        'cache-control': 'no-cache, no-transform',
+        'x-correlation-id': response.headers.get('x-correlation-id') ?? correlationId,
+      },
+    });
   } catch (error: unknown) {
     const timeout = error instanceof Error && error.name === 'TimeoutError';
     return NextResponse.json(
@@ -32,4 +42,3 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 }
-

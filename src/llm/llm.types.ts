@@ -9,5 +9,5 @@ export interface GenerateResult {
 
 export interface LlmProvider {
   generate(request: GenerateRequest): Promise<GenerateResult>;
+  generateStream(request: GenerateRequest, onDelta: (delta: string) => void): Promise<GenerateResult>;
 }
-

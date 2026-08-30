@@ -1,6 +1,8 @@
 .env
 .env.*
 !.env.example
+homolog.env
+!homolog.env.example
 
 node_modules/
 .next/
